@@ -1,0 +1,15 @@
+.menu {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 50px;
+    align-items: center;
+    width: 500px;
+}
+
+.buttons {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 30px;
+}

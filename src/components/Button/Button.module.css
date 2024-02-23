@@ -1,0 +1,29 @@
+.button {
+    background: var(--primary);
+    color: var(--secondary);
+    border: 1px solid var(--secondary);
+    cursor: pointer;
+    font-size: 20px;
+    transition: all 0.3s;
+    transform: skewX(-45deg);
+}
+
+.button > div {
+    transform: skewX(45deg);
+}
+
+.small {
+    width: 180px;
+    height: 65px;
+}
+
+.large {
+    width: 360px;
+    height: 65px;
+}
+
+.button:hover {
+    background: var(--secondary);
+    color: var(--primary);
+    transition: all 0.3s;
+}
