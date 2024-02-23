@@ -7,4 +7,5 @@ export interface ButtonProps
     > {
     size: 'large' | 'small';
     children: ReactNode;
+    handleClick?: () => void;
 }

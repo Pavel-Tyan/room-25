@@ -3,12 +3,13 @@ import { Play } from 'next/font/google';
 import '../styles/globals.css';
 import styles from './layout.module.css';
 import classNames from 'classnames';
+import StoreProvider from '@/redux/StoreProvider';
 
 const play = Play({ weight: ['400', '700'], subsets: ['latin'] });
 
 export const metadata: Metadata = {
     title: 'Room 25',
-    description: 'Browser version of the board game Room 25.',
+    description: 'Браузерная версия настольной игры Room 25.',
 };
 
 export default function RootLayout({
@@ -16,10 +17,13 @@ export default function RootLayout({
 }: Readonly<{
     children: React.ReactNode;
 }>) {
-    // Нужно будет поменять язык
     return (
         <html lang='ru'>
-            <body className={classNames(play.className, styles.layout)}>{children}</body>
+            <StoreProvider>
+                <body className={classNames(play.className, styles.layout)}>
+                    {children}
+                </body>
+            </StoreProvider>
         </html>
     );
 }
