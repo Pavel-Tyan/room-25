@@ -6,10 +6,14 @@ import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '@/redux/store';
 import { Languages } from '@/constants/languages.constants';
 import { changeLanguage } from '@/redux/languageSlice';
+import { useState } from 'react';
+import { GameRules } from '../GameRules/GameRules';
 
 export const Menu = (): JSX.Element => {
     let language = useSelector((state: RootState) => state.languages.language);
     const dispatch = useDispatch();
+
+    const [isOpen, setIsOpen] = useState<boolean>(false);
 
     return (
         <div className={styles.menu}>
@@ -19,10 +23,15 @@ export const Menu = (): JSX.Element => {
                     {language === Languages.Russian && 'НАЧАТЬ ИГРУ'}
                     {language === Languages.English && 'PLAY'}
                 </Button>
-                <Button size='large'>
+                <Button size='large' handleClick={() => setIsOpen(true)}>
                     {language === Languages.Russian && 'ПРАВИЛА ИГРЫ'}
                     {language === Languages.English && 'GAME RULES'}
                 </Button>
+                <GameRules
+                    language={language}
+                    isOpen={isOpen}
+                    onClose={() => setIsOpen(false)}
+                />
                 <div>
                     <Button
                         size='small'
