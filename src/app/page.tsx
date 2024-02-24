@@ -1,5 +1,10 @@
 import { Menu } from '@/components/Menu/Menu';
+import StoreProvider from '@/redux/StoreProvider';
 
 export default function Home() {
-    return <Menu />;
+    return (
+        <StoreProvider>
+            <Menu />
+        </StoreProvider>
+    );
 }

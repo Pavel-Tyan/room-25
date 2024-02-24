@@ -3,7 +3,6 @@ import { Play } from 'next/font/google';
 import '../styles/globals.css';
 import styles from './layout.module.css';
 import classNames from 'classnames';
-import StoreProvider from '@/redux/StoreProvider';
 
 const play = Play({ weight: ['400', '700'], subsets: ['latin'] });
 
@@ -19,11 +18,7 @@ export default function RootLayout({
 }>) {
     return (
         <html lang='ru'>
-            <StoreProvider>
-                <body className={classNames(play.className, styles.layout)}>
-                    {children}
-                </body>
-            </StoreProvider>
+            <body className={classNames(play.className, styles.layout)}>{children}</body>
         </html>
     );
 }
