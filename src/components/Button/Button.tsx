@@ -5,14 +5,13 @@ import cn from 'classnames';
 export const Button = ({
     size,
     children,
-    className,
     handleClick = () => {},
 }: ButtonProps): JSX.Element => {
     return (
         <button
-            className={cn(styles.button, className, {
-                [styles.large]: size == 'large',
-                [styles.small]: size == 'small',
+            className={cn(styles.button, {
+                [styles.buttonLarge]: size == 'large',
+                [styles.buttonSmall]: size == 'small',
             })}
             onClick={handleClick}
         >

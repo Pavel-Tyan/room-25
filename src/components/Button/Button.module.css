@@ -12,12 +12,12 @@
     transform: skewX(45deg);
 }
 
-.small {
+.buttonSmall {
     width: 180px;
     height: 65px;
 }
 
-.large {
+.buttonLarge {
     width: 360px;
     height: 65px;
 }

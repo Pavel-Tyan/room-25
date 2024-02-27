@@ -1,0 +1,15 @@
+.content {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.card {
+    display: flex;
+    gap: 30px;
+    align-items: center;
+}
+
+.cardDescription {
+    width: 80%;
+}

@@ -1,0 +1,9 @@
+.tileBackground {
+    width: 80px;
+    height: 80px;
+    border-radius: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: var(--secondary);
+}
