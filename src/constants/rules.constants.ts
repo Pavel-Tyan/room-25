@@ -3,6 +3,7 @@ export type Rules = {
     actionsInfo: {
         path: string;
         description: string;
+        alt: string;
     }[];
 };
 
@@ -30,12 +31,14 @@ export let rulesRussian: Rules = {
             description: `Заглянуть. Игрок выбирает одну из соседних комнат и смотрит ее эффект, при этом
 остальные игроки не видят эффект этой комнаты. После выполнения действия
 игрок больше не видит эффект комнаты, т. е. она снова становится закрытой.`,
+            alt: 'Иконка действия "Заглянуть"',
         },
         {
             path: './actions/enter.svg',
             description: `Войти. Персонаж перемещается в одну из соседних комнат. После этого комната
 становится открытой на все оставшиеся время игры. Эффект комнаты сразу
 применяется на вошедшего в нее персонажа.`,
+            alt: 'Иконка действия "Войти"',
         },
         {
             path: './actions/push.svg',
@@ -43,6 +46,7 @@ export let rulesRussian: Rules = {
 из соседних комнат. Этот персонаж сразу же испытает на себе эффект соседней
 комнаты. Если комната была закрыта, то она открывается. Однако нельзя
 выталкивать персонажа из центральной комнаты.`,
+            alt: 'Иконка действия "Толкнуть"',
         },
         {
             path: './actions/control.svg',
@@ -51,6 +55,7 @@ export let rulesRussian: Rules = {
 персонажи передвигаются вместе с комнатами. Комната в конце ряда, оказавшаяся
 за пределами поля, перемещается в противоположный конец передвинутого ряда.
 Но нельзя двигать ряды, в которых есть центральная комната.`,
+            alt: 'Иконка действия "Контролировать"',
         },
     ],
 };
@@ -79,12 +84,14 @@ first, etc.`,
             description: `Peek. The player selects one of the neighboring rooms and watches its effect, while
 other players do not see the effect of this room. After completing the action
 The player no longer sees the effect of the room, i.e. it becomes closed again.`,
+            alt: '"Peek" action icon',
         },
         {
             path: './actions/enter.svg',
             description: `Enter. Персонаж перемещается в одну из соседних комнат. После этого комната
 становится открытой на все оставшиеся время игры. Эффект комнаты сразу
 применяется на вошедшего в нее персонажа.`,
+            alt: '"Enter" action icon',
         },
         {
             path: './actions/push.svg',
@@ -92,6 +99,7 @@ The player no longer sees the effect of the room, i.e. it becomes closed again.`
 from neighboring rooms. This character will immediately experience the effect of the neighboring
 rooms. If the room was closed, it opens. However, it is impossible
 push the character out of the central room.`,
+            alt: '"Push" action icon',
         },
         {
             path: './actions/control.svg',
@@ -100,6 +108,7 @@ character. The entire row is shifted by 1 room in the selected direction. All
 characters move along with the rooms. The room at the end of the row, which turned out to be
 out of bounds, moves to the opposite end of the moved row.
 But you cannot move rows that have a central room.`,
+            alt: '"Control" action icon',
         },
     ],
 };

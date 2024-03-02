@@ -3,6 +3,7 @@ import { PopupProps } from './Popup.props';
 import styles from './Popup.module.css';
 import Image from 'next/image';
 import CrossIcon from '../../../public/cross.svg';
+import { Htag } from '../Htag/Htag';
 
 export const Popup = ({
     isOpen,
@@ -14,13 +15,15 @@ export const Popup = ({
         <Dialog open={isOpen} onClose={onClose}>
             <div className={styles.background}>
                 <Dialog.Panel className={styles.popup}>
-                    <Dialog.Title className={styles.title}>{title}</Dialog.Title>
+                    <Dialog.Title className={styles.title}>
+                        <Htag tag='h2'>{title}</Htag>
+                    </Dialog.Title>
                     <div className={styles.content}>{children}</div>
                     <button className={styles.closeButton} onClick={() => onClose()}>
                         <Image
                             src={CrossIcon}
-                            width={35}
-                            height={35}
+                            width={45}
+                            height={45}
                             alt='Иконка для кнопки закрытия модального окна'
                         />
                     </button>
