@@ -1,13 +1,13 @@
 'use client';
 import { Button } from '../Button/Button';
 import { Htag } from '../Htag/Htag';
-import styles from './Menu.module.css';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '@/redux/store';
 import { Languages } from '@/constants/languages.constants';
 import { changeLanguage } from '@/redux/languageSlice';
 import { useState } from 'react';
 import { GameRules } from '../GameRules/GameRules';
+import styles from './Menu.module.css';
 
 export const Menu = (): JSX.Element => {
     let language = useSelector((state: RootState) => state.languages.language);
