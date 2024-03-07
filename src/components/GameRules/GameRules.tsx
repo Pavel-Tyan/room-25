@@ -3,10 +3,17 @@ import { Popup } from '../Popup/Popup';
 import { GameRulesProps } from './GameRules.props';
 import styles from './GameRules.module.css';
 import Image from 'next/image';
-import { CardInfo, cardsInfoRussian } from '@/constants/cards.constants';
-import { cardsInfoEnglish } from '@/constants/cards.constants';
 import { RoomIcon } from '../RoomIcon/RoomIcon';
-import { Rules, rulesEnglish, rulesRussian } from '@/constants/rules.constants';
+import {
+    Rules,
+    CardInfo,
+    rulesEnglish,
+    rulesRussian,
+    cardsInfoEnglish,
+    cardsInfoRussian,
+    titlesEnglish,
+    titlesRussian,
+} from '@/constants/rules.constants';
 import { Htag } from '../Htag/Htag';
 
 export const GameRules = ({ language, isOpen, onClose }: GameRulesProps): JSX.Element => {
@@ -15,17 +22,17 @@ export const GameRules = ({ language, isOpen, onClose }: GameRulesProps): JSX.El
     let rules: Rules;
 
     if (language === Languages.Russian) {
-        titles = ['ПРАВИЛА ИГРЫ', 'ОБЩИЕ ПРАВИЛА', 'ВИДЫ ДЕЙСТВИЙ', 'ЭФФЕКТЫ КОМНАТ'];
+        titles = titlesRussian;
         cardsInfo = cardsInfoRussian;
         rules = rulesRussian;
     } else {
-        titles = ['GAME RULES', 'COMMON RULES', 'TYPES OF ACTIONS', 'EFFECTS OF ROOMS'];
+        titles = titlesEnglish;
         cardsInfo = cardsInfoEnglish;
         rules = rulesEnglish;
     }
 
     return (
-        <Popup title={titles[0]} isOpen={isOpen} onClose={onClose}>
+        <Popup language={language} title={titles[0]} isOpen={isOpen} onClose={onClose}>
             <div className={styles.rules}>
                 <Htag tag='h3'>{titles[1]}</Htag>
                 <div>{rules.description}</div>

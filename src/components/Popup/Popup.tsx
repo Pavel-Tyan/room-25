@@ -4,13 +4,23 @@ import styles from './Popup.module.css';
 import Image from 'next/image';
 import CrossIcon from '../../../public/cross.svg';
 import { Htag } from '../Htag/Htag';
+import { Languages } from '@/constants/languages.constants';
 
 export const Popup = ({
     isOpen,
     title,
     children,
+    language,
     onClose = () => {},
 }: PopupProps): JSX.Element => {
+    let closeButtonAltText: string;
+
+    if (language === Languages.Russian) {
+        closeButtonAltText = 'Иконка кнопки для закрытия модального окна.';
+    } else {
+        closeButtonAltText = 'Button icon for closing modal window';
+    }
+    
     return (
         <Dialog open={isOpen} onClose={onClose}>
             <div className={styles.background}>
@@ -24,7 +34,7 @@ export const Popup = ({
                             src={CrossIcon}
                             width={45}
                             height={45}
-                            alt='Иконка для кнопки закрытия модального окна'
+                            alt={closeButtonAltText}
                         />
                     </button>
                 </Dialog.Panel>

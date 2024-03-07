@@ -15,6 +15,7 @@
 .buttonSmall {
     width: 180px;
     height: 65px;
+    font-size: 14px;
 }
 
 .buttonLarge {
