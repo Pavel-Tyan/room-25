@@ -6,7 +6,7 @@ import {
 } from '@/constants/gameDifficulty.constants';
 import { Popup } from '../Popup/Popup';
 import { GameDifficultyProps } from './GameDifficulty.props';
-import { Languages } from '@/constants/languages.constants';
+import { Languages } from '@/constants/language.constants';
 import { Button } from '../Button/Button';
 import styles from './GameDifficulty.module.css';
 

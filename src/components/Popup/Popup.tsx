@@ -4,7 +4,7 @@ import styles from './Popup.module.css';
 import Image from 'next/image';
 import CrossIcon from '../../../public/cross.svg';
 import { Htag } from '../Htag/Htag';
-import { Languages } from '@/constants/languages.constants';
+import { Languages } from '@/constants/language.constants';
 
 export const Popup = ({
     isOpen,
@@ -20,7 +20,7 @@ export const Popup = ({
     } else {
         closeButtonAltText = 'Button icon for closing modal window';
     }
-    
+
     return (
         <Dialog open={isOpen} onClose={onClose}>
             <div className={styles.background}>

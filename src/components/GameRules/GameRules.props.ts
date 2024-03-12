@@ -1,4 +1,4 @@
-import { Languages } from '@/constants/languages.constants';
+import { Languages } from '@/constants/language.constants';
 
 export interface GameRulesProps {
     language: Languages;

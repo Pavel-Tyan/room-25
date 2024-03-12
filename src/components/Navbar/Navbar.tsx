@@ -1,4 +1,4 @@
-import { Languages } from '@/constants/languages.constants';
+import { Languages } from '@/constants/language.constants';
 import { Button } from '../Button/Button';
 import { NavbarProps } from './Navbar.props';
 

@@ -1,20 +1,20 @@
-import { Languages } from '@/constants/languages.constants';
+import { Language } from '@/constants/language.constants';
 import { createSlice } from '@reduxjs/toolkit';
 import type { PayloadAction } from '@reduxjs/toolkit';
 
 export interface LanguageState {
-    language: Languages;
+    language: Language;
 }
 
 const initialState: LanguageState = {
-    language: Languages.Russian,
+    language: Language.Russian,
 };
 
 const languageSlice = createSlice({
     name: 'language',
     initialState,
     reducers: {
-        changeLanguage(state, action: PayloadAction<Languages>) {
+        changeLanguage(state, action: PayloadAction<Language>) {
             state.language = action.payload;
         },
     },

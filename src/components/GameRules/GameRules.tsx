@@ -1,4 +1,4 @@
-import { Languages } from '@/constants/languages.constants';
+import { Languages } from '@/constants/language.constants';
 import { Popup } from '../Popup/Popup';
 import { GameRulesProps } from './GameRules.props';
 import styles from './GameRules.module.css';

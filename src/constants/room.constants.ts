@@ -1,4 +1,4 @@
-export enum Rooms {
+export enum Room {
     CentralRoom,
     AcidBathRoom,
     ObservationRoom,
