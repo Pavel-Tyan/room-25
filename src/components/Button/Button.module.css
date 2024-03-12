@@ -13,19 +13,19 @@
 }
 
 .buttonSmall {
-    width: 180px;
+    width: 200px;
     height: 65px;
     font-size: 14px;
 }
 
 .buttonMedium {
-    width: 180px;
+    width: 205px;
     height: 65px;
     font-size: 16px;
 }
 
 .buttonLarge {
-    width: 360px;
+    width: 410px;
     height: 65px;
 }
 

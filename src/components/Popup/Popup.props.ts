@@ -1,10 +1,10 @@
-import { Languages } from '@/constants/language.constants';
+import { Language } from '@/constants/language.constants';
 import { ReactNode } from 'react';
 
 export interface PopupProps {
     isOpen: boolean;
     onClose: () => void;
     title: string;
-    language: Languages;
+    language: Language;
     children: ReactNode;
 }

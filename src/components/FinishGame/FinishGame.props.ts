@@ -1,6 +1,6 @@
 import { Language } from '@/constants/language.constants';
 
-export interface GameRulesProps {
+export interface FinishGameProps {
     language: Language;
     isOpen: boolean;
     onClose: () => void;
