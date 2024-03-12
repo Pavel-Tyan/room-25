@@ -1,4 +1,4 @@
-import { Languages } from '@/constants/language.constants';
+import { Language } from '@/constants/language.constants';
 import { Popup } from '../Popup/Popup';
 import { GameRulesProps } from './GameRules.props';
 import styles from './GameRules.module.css';
@@ -21,7 +21,7 @@ export const GameRules = ({ language, isOpen, onClose }: GameRulesProps): JSX.El
     let cardsInfo: CardInfo[];
     let rules: Rules;
 
-    if (language === Languages.Russian) {
+    if (language === Language.Russian) {
         titles = titlesRussian;
         cardsInfo = cardsInfoRussian;
         rules = rulesRussian;

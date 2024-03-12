@@ -4,7 +4,7 @@ import styles from './Popup.module.css';
 import Image from 'next/image';
 import CrossIcon from '../../../public/cross.svg';
 import { Htag } from '../Htag/Htag';
-import { Languages } from '@/constants/language.constants';
+import { Language } from '@/constants/language.constants';
 
 export const Popup = ({
     isOpen,
@@ -15,7 +15,7 @@ export const Popup = ({
 }: PopupProps): JSX.Element => {
     let closeButtonAltText: string;
 
-    if (language === Languages.Russian) {
+    if (language === Language.Russian) {
         closeButtonAltText = 'Иконка кнопки для закрытия модального окна.';
     } else {
         closeButtonAltText = 'Button icon for closing modal window';

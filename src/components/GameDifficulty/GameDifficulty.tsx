@@ -6,7 +6,7 @@ import {
 } from '@/constants/gameDifficulty.constants';
 import { Popup } from '../Popup/Popup';
 import { GameDifficultyProps } from './GameDifficulty.props';
-import { Languages } from '@/constants/language.constants';
+import { Language } from '@/constants/language.constants';
 import { Button } from '../Button/Button';
 import styles from './GameDifficulty.module.css';
 
@@ -18,7 +18,7 @@ export const GameDifficulty = ({
     let buttonsTitles: string[];
     let popupTitle: string;
 
-    if (language === Languages.Russian) {
+    if (language === Language.Russian) {
         buttonsTitles = buttonsTitlesRussian;
         popupTitle = gameDifficultyTitleRussian;
     } else {
