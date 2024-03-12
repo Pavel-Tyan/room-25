@@ -1,0 +1,17 @@
+export enum Rooms {
+    CentralRoom,
+    AcidBathRoom,
+    ObservationRoom,
+    FloodedRoom,
+    DarkRoom,
+    ControlRoom,
+    JailRoom,
+    DeathRoom,
+    EmptyRoom,
+    FreezerRoom,
+    WhirlpoolRoom,
+    TrapRoom,
+    IllusionRoom,
+    TwinRoom,
+    Room25,
+}
