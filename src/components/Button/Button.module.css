@@ -18,6 +18,12 @@
     font-size: 14px;
 }
 
+.buttonMedium {
+    width: 180px;
+    height: 65px;
+    font-size: 16px;
+}
+
 .buttonLarge {
     width: 360px;
     height: 65px;

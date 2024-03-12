@@ -1,5 +1,5 @@
-import { Languages } from '@/constants/language.constants';
+import { Language } from '@/constants/language.constants';
 
 export interface NavbarProps {
-    language: Languages;
+    language: Language;
 }

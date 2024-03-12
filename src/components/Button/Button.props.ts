@@ -5,7 +5,7 @@ export interface ButtonProps
         ButtonHTMLAttributes<HTMLButtonElement>,
         HTMLButtonElement
     > {
-    size: 'large' | 'small';
+    size: 'large' | 'medium' | 'small';
     children: ReactNode;
-    handleClick?: () => void;
+    handleClick?: () => void; // Сделать обязательным параметром, когда все кнопки будут с обработчиками клика
 }

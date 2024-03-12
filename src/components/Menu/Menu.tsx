@@ -41,13 +41,13 @@ export const Menu = (): JSX.Element => {
                 />
                 <div>
                     <Button
-                        size='small'
+                        size='medium'
                         handleClick={() => dispatch(changeLanguage(Language.English))}
                     >
                         ENG
                     </Button>
                     <Button
-                        size='small'
+                        size='medium'
                         handleClick={() => dispatch(changeLanguage(Language.Russian))}
                     >
                         РУС

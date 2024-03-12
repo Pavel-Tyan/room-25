@@ -11,6 +11,7 @@ export const Button = ({
         <button
             className={cn(styles.button, {
                 [styles.buttonLarge]: size == 'large',
+                [styles.buttonMedium]: size == 'medium',
                 [styles.buttonSmall]: size == 'small',
             })}
             onClick={handleClick}
