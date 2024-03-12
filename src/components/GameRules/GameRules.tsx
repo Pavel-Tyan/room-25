@@ -11,32 +11,36 @@ import {
     rulesRussian,
     cardsInfoEnglish,
     cardsInfoRussian,
-    titlesEnglish,
-    titlesRussian,
 } from '@/constants/rules.constants';
 import { Htag } from '../Htag/Htag';
 
 export const GameRules = ({ language, isOpen, onClose }: GameRulesProps): JSX.Element => {
-    let titles: string[];
+    let title: string;
     let cardsInfo: CardInfo[];
     let rules: Rules;
 
     if (language === Language.Russian) {
-        titles = titlesRussian;
+        title = 'ПРАВИЛА ИГРЫ';
         cardsInfo = cardsInfoRussian;
         rules = rulesRussian;
     } else {
-        titles = titlesEnglish;
+        title = 'GAME RULES';
         cardsInfo = cardsInfoEnglish;
         rules = rulesEnglish;
     }
 
     return (
-        <Popup language={language} title={titles[0]} isOpen={isOpen} onClose={onClose}>
+        <Popup language={language} title={title} isOpen={isOpen} onClose={onClose}>
             <div className={styles.rules}>
-                <Htag tag='h3'>{titles[1]}</Htag>
+                <Htag tag='h3'>
+                    {language === Language.Russian && 'ОБЩИЕ ПРАВИЛА'}
+                    {language === Language.English && 'COMMON RULES'}
+                </Htag>
                 <div>{rules.description}</div>
-                <Htag tag='h3'>{titles[2]}</Htag>
+                <Htag tag='h3'>
+                    {language === Language.Russian && 'ВИДЫ ДЕЙСТВИЙ'}
+                    {language === Language.English && 'TYPES OF ACTIONS'}
+                </Htag>
                 <div className={styles.rulesContent}>
                     {rules.actionsInfo.map((action) => (
                         <div key={action.path} className={styles.card}>
@@ -52,7 +56,10 @@ export const GameRules = ({ language, isOpen, onClose }: GameRulesProps): JSX.El
                         </div>
                     ))}
                 </div>
-                <Htag tag='h3'>{titles[3]}</Htag>
+                <Htag tag='h3'>
+                    {language === Language.Russian && 'ЭФФЕКТЫ КОМНАТ'}
+                    {language === Language.English && 'EFFECTS OF ROOMS'}
+                </Htag>
                 <div className={styles.rulesContent}>
                     {cardsInfo.map((cardInfo) => (
                         <div key={cardInfo.alt} className={styles.card}>

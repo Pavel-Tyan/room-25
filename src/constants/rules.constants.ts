@@ -296,17 +296,3 @@ export const cardsInfoEnglish: CardInfo[] = [
             'Room 25. This is the exit room. When all the prisoners are gathered in it, one of them must move it to the exit using the control action.',
     },
 ];
-
-export const titlesRussian: string[] = [
-    'ПРАВИЛА ИГРЫ',
-    'ОБЩИЕ ПРАВИЛА',
-    'ВИДЫ ДЕЙСТВИЙ',
-    'ЭФФЕКТЫ КОМНАТ',
-];
-
-export const titlesEnglish: string[] = [
-    'GAME RULES',
-    'COMMON RULES',
-    'TYPES OF ACTIONS',
-    'EFFECTS OF ROOMS',
-];

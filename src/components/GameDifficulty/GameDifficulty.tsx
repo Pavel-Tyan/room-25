@@ -1,9 +1,3 @@
-import {
-    buttonsTitlesEnglish,
-    buttonsTitlesRussian,
-    gameDifficultyTitleEnglish,
-    gameDifficultyTitleRussian,
-} from '@/constants/gameDifficulty.constants';
 import { Popup } from '../Popup/Popup';
 import { GameDifficultyProps } from './GameDifficulty.props';
 import { Language } from '@/constants/language.constants';
@@ -18,47 +12,62 @@ export const GameDifficulty = ({
     isOpen,
     onClose,
 }: GameDifficultyProps): JSX.Element => {
-    let buttonsTitles: string[];
     let popupTitle: string;
 
     if (language === Language.Russian) {
-        buttonsTitles = buttonsTitlesRussian;
-        popupTitle = gameDifficultyTitleRussian;
+        popupTitle = 'УРОВЕНЬ СЛОЖНОСТИ';
     } else {
-        buttonsTitles = buttonsTitlesEnglish;
-        popupTitle = gameDifficultyTitleEnglish;
+        popupTitle = 'GAME DIFFICULTY';
     }
 
     const router = useRouter();
 
     const dispatch = useDispatch();
 
-    const clickHandlers: (() => void)[] = [
-        () => {
-            dispatch(setRoomsBeginnerMode());
-            router.push('/game');
-        },
-        () => {
-            dispatch(setRoomsExpertMode());
-            router.push('/game');
-        },
-        // Остальные режимы
-        () => {
-            router.push('/game');
-        },
-        () => {
-            router.push('/game');
-        },
-    ];
-
     return (
         <Popup isOpen={isOpen} onClose={onClose} language={language} title={popupTitle}>
             <div className={styles.buttonsWrapper}>
-                {buttonsTitles.map((title, index) => (
-                    <Button key={title} size='large' handleClick={clickHandlers[index]}>
-                        {title}
-                    </Button>
-                ))}
+                <Button
+                    size='large'
+                    handleClick={() => {
+                        router.push('/game');
+                    }}
+                >
+                    {language === Language.Russian && 'ОБУЧЕНИЕ'}
+                    {language === Language.English && 'TUTORIAL'}
+                </Button>
+
+                <Button
+                    size='large'
+                    handleClick={() => {
+                        dispatch(setRoomsBeginnerMode());
+                        router.push('/game');
+                    }}
+                >
+                    {language === Language.Russian && 'НОВИЧЕК'}
+                    {language === Language.English && 'BEGINNER'}
+                </Button>
+
+                <Button
+                    size='large'
+                    handleClick={() => {
+                        dispatch(setRoomsExpertMode());
+                        router.push('/game');
+                    }}
+                >
+                    {language === Language.Russian && 'ЭКСПЕРТ'}
+                    {language === Language.English && 'EXPERT'}
+                </Button>
+
+                <Button
+                    size='large'
+                    handleClick={() => {
+                        router.push('/game');
+                    }}
+                >
+                    {language === Language.Russian && 'КАСТОМНЫЙ РЕЖИМ'}
+                    {language === Language.English && 'CUSTOM'}
+                </Button>
             </div>
         </Popup>
     );

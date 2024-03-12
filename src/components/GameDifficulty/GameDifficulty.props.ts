@@ -1,7 +1,7 @@
-import { Languages } from '@/constants/language.constants';
+import { Language } from '@/constants/language.constants';
 
 export interface GameDifficultyProps {
-    language: Languages;
+    language: Language;
     isOpen: boolean;
     onClose: () => void;
 }
