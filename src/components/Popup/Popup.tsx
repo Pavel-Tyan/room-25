@@ -22,7 +22,7 @@ export const Popup = ({
     }
 
     return (
-        <Dialog open={isOpen} onClose={onClose}>
+        <Dialog className={styles.z} open={isOpen} onClose={onClose}>
             <div className={styles.background}>
                 <Dialog.Panel className={styles.popup}>
                     <Dialog.Title className={styles.title}>
