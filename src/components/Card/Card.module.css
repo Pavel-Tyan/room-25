@@ -1,0 +1,27 @@
+.tileFirstBackground {
+    width: 90px;
+    height: 90px;
+    border-radius: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: var(--primary);
+    border: 1.5px solid var(--secondary);
+}
+
+.tileSecondBackground {
+    border-radius: 10px;
+    width: 78px;
+    height: 78px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.tileSecondBackgroundBlack {
+    background: var(--primary);
+}
+
+.tileSecondBackgroundWhite {
+    background: var(--secondary);
+}

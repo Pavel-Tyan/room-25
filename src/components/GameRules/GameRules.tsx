@@ -3,7 +3,7 @@ import { Popup } from '../Popup/Popup';
 import { GameRulesProps } from './GameRules.props';
 import styles from './GameRules.module.css';
 import Image from 'next/image';
-import { RoomIcon } from '../RoomIcon/RoomIcon';
+import { Card } from '../Card/Card';
 import {
     Rules,
     CardInfo,
@@ -44,14 +44,14 @@ export const GameRules = ({ language, isOpen, onClose }: GameRulesProps): JSX.El
                 <div className={styles.rulesContent}>
                     {rules.actionsInfo.map((action) => (
                         <div key={action.path} className={styles.card}>
-                            <RoomIcon>
+                            <Card color='black'>
                                 <Image
                                     src={action.path}
                                     width={50}
                                     height={50}
                                     alt={action.alt}
                                 />
-                            </RoomIcon>
+                            </Card>
                             <p className={styles.cardDescription}>{action.description}</p>
                         </div>
                     ))}
@@ -63,14 +63,14 @@ export const GameRules = ({ language, isOpen, onClose }: GameRulesProps): JSX.El
                 <div className={styles.rulesContent}>
                     {cardsInfo.map((cardInfo) => (
                         <div key={cardInfo.alt} className={styles.card}>
-                            <RoomIcon>
+                            <Card color='white'>
                                 <Image
                                     src={cardInfo.path}
                                     width={50}
                                     height={50}
                                     alt={cardInfo.alt}
                                 />
-                            </RoomIcon>
+                            </Card>
                             <p className={styles.cardDescription}>
                                 {cardInfo.description}
                             </p>
