@@ -8,6 +8,7 @@ import { Card } from '../Card/Card';
 import { GameCardProps } from './GameCard.props';
 import { Language } from '@/constants/language.constants';
 import Image from 'next/image';
+import { Player } from '../Player/Player';
 
 export const GameCard = ({
     hasOpened,
@@ -36,6 +37,12 @@ export const GameCard = ({
                 src={hasOpened ? cardsInfoMap.get(room).path : './question.svg'}
                 alt={hasOpened ? cardsInfoMap.get(room).alt : 'question mark icon'}
             />
+            {hasPlayerInRoom[0] && <Player number={1} language={language}></Player>}
+            {hasPlayerInRoom[1] && <Player number={2} language={language}></Player>}
+            {hasPlayerInRoom[2] && <Player number={3} language={language}></Player>}
+            {hasPlayerInRoom[3] && <Player number={4} language={language}></Player>}
+            {hasPlayerInRoom[4] && <Player number={5} language={language}></Player>}
+            {hasPlayerInRoom[5] && <Player number={6} language={language}></Player>}
         </Card>
     );
 };
