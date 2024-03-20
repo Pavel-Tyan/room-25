@@ -25,9 +25,7 @@ export const Popup = ({
         <Dialog className={styles.z} open={isOpen} onClose={onClose}>
             <div className={styles.background}>
                 <Dialog.Panel className={styles.popup}>
-                    <Dialog.Title className={styles.title}>
-                        <Htag tag='h2'>{title}</Htag>
-                    </Dialog.Title>
+                    <Dialog.Title className={styles.title}>{title}</Dialog.Title>
                     <div className={styles.content}>{children}</div>
                     <button className={styles.closeButton} onClick={() => onClose()}>
                         <Image

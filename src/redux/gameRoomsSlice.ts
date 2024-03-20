@@ -93,6 +93,11 @@ const getRandomOrderedRooms = (unorderedRooms: Room[]): Room[] => {
     return orderedRooms;
 };
 
+// Функция нужна, чтобы хранить массив карт в sessionStorage
+const RoomsToString = (rooms: Room[]): string => {
+    return rooms.join('/');
+};
+
 export interface GameRoomsState {
     gameRooms: Room[];
 }
@@ -107,12 +112,15 @@ const gameRoomsSlice = createSlice({
     reducers: {
         setRoomsBeginnerMode(state) {
             state.gameRooms = getRandomOrderedRooms(roomsForBeginnerMode);
+            sessionStorage.setItem('cards', RoomsToString(state.gameRooms));
         },
         setRoomsExpertMode(state) {
             state.gameRooms = getRandomOrderedRooms(roomsForExpertMode);
+            sessionStorage.setItem('cards', RoomsToString(state.gameRooms));
         },
         setRoomsCustomMode(state, action: PayloadAction<Room[]>) {
             state.gameRooms = action.payload; // Набор комнат в аргументе
+            sessionStorage.setItem('cards', RoomsToString(state.gameRooms));
         },
     },
 });
