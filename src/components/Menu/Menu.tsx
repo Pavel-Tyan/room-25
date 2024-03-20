@@ -1,21 +1,21 @@
 'use client';
 import { Button } from '../Button/Button';
 import { Htag } from '../Htag/Htag';
-import { useDispatch, useSelector } from 'react-redux';
-import { RootState } from '@/redux/store';
 import { Language } from '@/constants/language.constants';
-import { changeLanguage } from '@/redux/languageSlice';
 import { useState } from 'react';
 import { GameRules } from '../GameRules/GameRules';
 import styles from './Menu.module.css';
 import { GameDifficulty } from '../GameDifficulty/GameDifficulty';
 
 export const Menu = (): JSX.Element => {
-    let language = useSelector((state: RootState) => state.languages.language);
-    const dispatch = useDispatch();
-
+    const [language, setLanguage] = useState<Language>(Language.Russian);
     const [isRulesOpen, setIsRulesOpen] = useState<boolean>(false);
     const [isGameDifficultyOpen, setIsGameDifficultyOpen] = useState<boolean>(false);
+
+    const switchLanguage = (language: Language) => {
+        setLanguage(language);
+        sessionStorage.setItem('language', language);
+    };
 
     return (
         <div className={styles.menu}>
@@ -42,13 +42,13 @@ export const Menu = (): JSX.Element => {
                 <div>
                     <Button
                         size='medium'
-                        handleClick={() => dispatch(changeLanguage(Language.English))}
+                        handleClick={() => switchLanguage(Language.English)}
                     >
                         ENG
                     </Button>
                     <Button
                         size='medium'
-                        handleClick={() => dispatch(changeLanguage(Language.Russian))}
+                        handleClick={() => switchLanguage(Language.Russian)}
                     >
                         РУС
                     </Button>

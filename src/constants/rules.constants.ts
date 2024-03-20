@@ -1,3 +1,5 @@
+import { Room } from './room.constants';
+
 export type Rules = {
     description: string;
     actionsInfo: {
@@ -8,6 +10,7 @@ export type Rules = {
 };
 
 export type CardInfo = {
+    room: Room;
     alt: string;
     path: string;
     description: string;
@@ -121,87 +124,102 @@ But you cannot move rows that have a central room.`,
 
 export const cardsInfoRussian: CardInfo[] = [
     {
+        room: Room.CentralRoom,
         alt: 'Иконка центральной комнаты',
         path: './rooms/arrows.svg',
         description:
             'Центральная комната. Это комната, в которой все заключённые начинают игру. Находясь здесь, вы можете выбрать только действия «Заглянуть» и «Передвинуться». Двигать (использовать действие «Контролировать») эту комнату запрещено.',
     },
     {
+        room: Room.AcidBathRoom,
         alt: 'Иконка комнаты с кислотной баней',
         path: './rooms/acid.svg',
         description:
             'Кислотная баня. Как только двое персонажей оказываются в этой комнате, тот из них, кто зашёл первым, умирает.',
     },
     {
+        room: Room.ObservationRoom,
         alt: 'Иконка комнаты наблюдения',
         path: './rooms/binoculars.svg',
         description: 'Комната наблюдения. Можно посмотреть любую закрытую комнату.',
     },
     {
+        room: Room.FloodedRoom,
         alt: 'Иконка затопленной комнаты',
         path: './rooms/droplet.svg',
         description:
             'Затопленная комната. Как только персонаж заходит в эту комнату, она закрывается изнутри. Никто не может войти в неё до конца игры. Если после второго действия следующего раунда персонаж из неё не вышел, он умирает.',
     },
     {
+        room: Room.DarkRoom,
         alt: 'Иконка темной комнаты',
         path: './rooms/eye.svg',
         description:
             'Темная комната. Находясь в этой комнате, вы не можете совершать действие «Заглянуть».',
     },
     {
+        room: Room.ControlRoom,
         alt: 'Иконка комнаты контроля',
         path: './rooms/gear.svg',
         description:
             'Комната контроля. Передвиньте любой ряд комнат (кроме среднего) в любом направлении по вашему выбору (как при совершении действия «Контролировать»).',
     },
     {
+        room: Room.JailRoom,
         alt: 'Иконка комнаты с тюрьмой',
         path: './rooms/prison.svg',
         description:
             'Тюрьма. Выбраться из комнаты можно только к другому персонажу в соседней комнате или в Центральную комнату, если она находится по соседству.',
     },
     {
+        room: Room.DeathRoom,
         alt: 'Иконка комнаты смерти',
         path: './rooms/skull.svg',
         description:
             'Комната смерти. Оказавшись в этой комнате, ваш персонаж мгновенно умирает.',
     },
     {
+        room: Room.EmptyRoom,
         alt: 'Иконка пустой комнаты',
         path: './rooms/smile.svg',
         description: 'Пустая комната. Обычная комната без дополнительных эффектов.',
     },
     {
+        room: Room.FreezerRoom,
         alt: 'Иконка комнаты с морозилкой',
         path: './rooms/snowflake.svg',
         description:
             'Морозилка. Находясь в этой комнате, можно запрограммировать только одно действие во время фазы программирования.',
     },
     {
+        room: Room.WhirlpoolRoom,
         alt: 'Иконка комнаты с водоворотом',
         path: './rooms/tornado.svg',
         description: 'Водоворот. Перемещает персонажа в центральную комнату.',
     },
     {
+        room: Room.TrapRoom,
         alt: 'Иконка комнаты с ловушкой',
         path: './rooms/trap.svg',
         description:
             'Ловушка. Следующим действием нужно покинуть комнату, иначе вас убьют.',
     },
     {
+        room: Room.IllusionRoom,
         alt: 'Иконка комнаты иллюзий',
         path: './rooms/trick.svg',
         description:
             'Комната иллюзий. Персонаж перемещается в любую закрытую комнату на выбор и сразу применяет ее эффект. Перемещённая комната Иллюзий остаётся открытой до конца игры.',
     },
     {
+        room: Room.TwinRoom,
         alt: 'Иконка комнаты-близняшки',
         path: './rooms/twins.svg',
         description:
             '⎯ Комната-Близняшка. Если вторая комната-близняшка уже открыта, то персонаж перемещается в неё. Если нет, ничего не происходит.',
     },
     {
+        room: Room.Room25,
         alt: 'Иконка комнаты 25',
         path: './rooms/25.svg',
         description:
@@ -211,85 +229,100 @@ export const cardsInfoRussian: CardInfo[] = [
 
 export const cardsInfoEnglish: CardInfo[] = [
     {
+        room: Room.CentralRoom,
         alt: 'Central room icon',
         path: './rooms/arrows.svg',
         description:
             'Central room. This is the room where all prisoners start the game. While here, you can only select the “Peek” and “Move” actions. It is prohibited to move (use the “Control” action) this room.',
     },
     {
+        room: Room.AcidBathRoom,
         alt: 'Acid bath room icon',
         path: './rooms/acid.svg',
         description:
             'Acid bath. As soon as two characters are in this room, the one who entered first dies.',
     },
     {
-        alt: 'Surveillance room icon',
+        room: Room.ObservationRoom,
+        alt: 'Observation room icon',
         path: './rooms/binoculars.svg',
         description: 'Observation room. You can view any closed room.',
     },
     {
+        room: Room.FloodedRoom,
         alt: 'Flooded room icon',
         path: './rooms/droplet.svg',
         description:
             'Flooded room. As soon as a character enters this room, it is locked from the inside. No one can enter it until the end of the game. If after the second action of the next round the character does not exit, he dies.',
     },
     {
+        room: Room.DarkRoom,
         alt: 'Dark room icon',
         path: './rooms/eye.svg',
         description: 'A dark room. While in this room, you cannot take the Peek action.',
     },
     {
+        room: Room.ControlRoom,
         alt: 'Control room icon',
         path: './rooms/gear.svg',
         description:
             'Control room. Move any row of rooms (except the middle one) in any direction of your choice (as when taking the Control action).',
     },
     {
+        room: Room.JailRoom,
         alt: 'Prison room icon',
         path: './rooms/prison.svg',
         description:
             'Jail. You can only get out of the room to another character in the next room or to the Central Room, if it is located next door.',
     },
     {
+        room: Room.DeathRoom,
         alt: 'Death room icon',
         path: './rooms/skull.svg',
         description: 'Death room. Once in this room, your character dies instantly.',
     },
     {
+        room: Room.EmptyRoom,
         alt: 'Empty room icon',
         path: './rooms/smile.svg',
         description: 'Empty room. An ordinary room without additional effects.',
     },
     {
+        room: Room.FreezerRoom,
         alt: 'Freezer room icon',
         path: './rooms/snowflake.svg',
         description:
             'Freezer. While in this room, you can only program one action during the programming phase.',
     },
     {
+        room: Room.WhirlpoolRoom,
         alt: 'Whirlpool room icon',
         path: './rooms/tornado.svg',
         description: 'Whirlpool. Moves the character to the central room.',
     },
     {
+        room: Room.TrapRoom,
         alt: 'Trap room icon',
         path: './rooms/trap.svg',
         description:
             'Trap. The next action is to leave the room, otherwise you will be killed.',
     },
     {
+        room: Room.IllusionRoom,
         alt: 'Illusion room icon',
         path: './rooms/trick.svg',
         description:
             'Room of illusions. The character moves to any closed room of his choice and immediately applies its effect. The moved Illusion room remains open until the end of the game.',
     },
     {
+        room: Room.TwinRoom,
         alt: 'Twin room icon',
         path: './rooms/twins.svg',
         description:
             'Twin Room. If the second twin room is already open, then the character moves into it. If not, nothing happens.',
     },
     {
+        room: Room.Room25,
         alt: 'Room 25 icon',
         path: './rooms/25.svg',
         description:

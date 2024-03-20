@@ -1,9 +1,9 @@
 import { configureStore } from '@reduxjs/toolkit';
-import languageReducer from './languageSlice';
 import gameRoomsReducer from './gameRoomsSlice';
+
 export const makeStore = () => {
     return configureStore({
-        reducer: { languages: languageReducer, gameRooms: gameRoomsReducer },
+        reducer: { gameRooms: gameRoomsReducer },
     });
 };
 

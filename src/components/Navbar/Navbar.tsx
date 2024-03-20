@@ -1,11 +1,17 @@
 import { Language } from '@/constants/language.constants';
 import { Button } from '../Button/Button';
-import { NavbarProps } from './Navbar.props';
 import { GameRules } from '../GameRules/GameRules';
 import { useState } from 'react';
 import { FinishGame } from '../FinishGame/FinishGame';
 
-export const Navbar = ({ language }: NavbarProps): JSX.Element => {
+export const Navbar = (): JSX.Element => {
+    let language: Language;
+
+    if (sessionStorage.getItem('language') === Language.Russian) {
+        language = Language.Russian;
+    } else {
+        language = Language.English;
+    }
     const [isRulesOpen, setIsRulesOpen] = useState<boolean>(false);
     const [isFinishGameOpen, setIsFinishGameOpen] = useState<boolean>(false);
 
