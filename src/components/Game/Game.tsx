@@ -11,6 +11,8 @@ type RoomInfo = {
     key: number;
 };
 
+const ROOM_COUNT: number = 25;
+
 export const Game = (): JSX.Element => {
     let language: Language;
 
@@ -34,6 +36,16 @@ export const Game = (): JSX.Element => {
         });
     }
 
+    const hasPlayerInRoom: boolean[][] = Array(25).fill([
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+    ]);
+    hasPlayerInRoom[12] = [true, true, true, true, true, true];
+
     return (
         <div className={styles.gameWrapper}>
             <RoundCounter language={language} roundsLeft={10} />
@@ -43,7 +55,7 @@ export const Game = (): JSX.Element => {
                         key={currentRoom.key}
                         // Центральная комната открыта в начале игры
                         hasOpened={i == 12 ? true : false}
-                        hasPlayerInRoom={[]}
+                        hasPlayerInRoom={hasPlayerInRoom[i]}
                         room={currentRoom.room}
                         language={language}
                     ></GameCard>
