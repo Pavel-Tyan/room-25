@@ -7,11 +7,12 @@ import { FinishGame } from '../FinishGame/FinishGame';
 export const Navbar = (): JSX.Element => {
     let language: Language;
 
-    if (sessionStorage.getItem('language') === Language.Russian) {
-        language = Language.Russian;
-    } else {
+    if (sessionStorage.getItem('language') === Language.English) {
         language = Language.English;
+    } else {
+        language = Language.Russian;
     }
+
     const [isRulesOpen, setIsRulesOpen] = useState<boolean>(false);
     const [isFinishGameOpen, setIsFinishGameOpen] = useState<boolean>(false);
 

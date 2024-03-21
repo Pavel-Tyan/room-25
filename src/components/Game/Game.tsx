@@ -14,10 +14,10 @@ type RoomInfo = {
 export const Game = (): JSX.Element => {
     let language: Language;
 
-    if (sessionStorage.getItem('language') === Language.Russian) {
-        language = Language.Russian;
-    } else {
+    if (sessionStorage.getItem('language') === Language.English) {
         language = Language.English;
+    } else {
+        language = Language.Russian;
     }
 
     const rooms: Room[] = sessionStorage
