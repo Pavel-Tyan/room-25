@@ -25,7 +25,13 @@ export const GameDifficulty = ({
     const dispatch = useDispatch();
 
     return (
-        <Popup isOpen={isOpen} onClose={onClose} language={language} title={popupTitle}>
+        <Popup
+            hasCloseButton={true}
+            isOpen={isOpen}
+            onClose={onClose}
+            language={language}
+            title={popupTitle}
+        >
             <div className={styles.buttonsWrapper}>
                 <Button
                     size='large'

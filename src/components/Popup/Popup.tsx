@@ -3,7 +3,6 @@ import { PopupProps } from './Popup.props';
 import styles from './Popup.module.css';
 import Image from 'next/image';
 import CrossIcon from '../../../public/cross.svg';
-import { Htag } from '../Htag/Htag';
 import { Language } from '@/constants/language.constants';
 
 export const Popup = ({
@@ -11,6 +10,7 @@ export const Popup = ({
     title,
     children,
     language,
+    hasCloseButton,
     onClose = () => {},
 }: PopupProps): JSX.Element => {
     let closeButtonAltText: string;
@@ -27,14 +27,16 @@ export const Popup = ({
                 <Dialog.Panel className={styles.popup}>
                     <Dialog.Title className={styles.title}>{title}</Dialog.Title>
                     <div className={styles.content}>{children}</div>
-                    <button className={styles.closeButton} onClick={() => onClose()}>
-                        <Image
-                            src={CrossIcon}
-                            width={45}
-                            height={45}
-                            alt={closeButtonAltText}
-                        />
-                    </button>
+                    {hasCloseButton && (
+                        <button className={styles.closeButton} onClick={() => onClose()}>
+                            <Image
+                                src={CrossIcon}
+                                width={45}
+                                height={45}
+                                alt={closeButtonAltText}
+                            />
+                        </button>
+                    )}
                 </Dialog.Panel>
             </div>
         </Dialog>

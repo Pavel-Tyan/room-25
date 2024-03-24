@@ -23,7 +23,13 @@ export const FinishGame = ({
     const router = useRouter();
 
     return (
-        <Popup language={language} title={title} isOpen={isOpen} onClose={onClose}>
+        <Popup
+            hasCloseButton={true}
+            language={language}
+            title={title}
+            isOpen={isOpen}
+            onClose={onClose}
+        >
             <div className={styles.finishGameWrapper}>
                 <p className={styles.finishGameText}>{text}</p>
                 <div className={styles.buttonsWrapper}>

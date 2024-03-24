@@ -1,0 +1,24 @@
+.selectCountWrapper {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 30px;
+}
+
+.selectCountButton {
+    font-size: 30px !important;
+}
+
+.isClosed {
+    display: none;
+}
+
+.radios {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    align-items: center;
+    justify-content: center;
+}

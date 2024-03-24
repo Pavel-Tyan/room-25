@@ -30,7 +30,13 @@ export const GameRules = ({ language, isOpen, onClose }: GameRulesProps): JSX.El
     }
 
     return (
-        <Popup language={language} title={title} isOpen={isOpen} onClose={onClose}>
+        <Popup
+            hasCloseButton={true}
+            language={language}
+            title={title}
+            isOpen={isOpen}
+            onClose={onClose}
+        >
             <div className={styles.rules}>
                 <Htag tag='h3'>
                     {language === Language.Russian && 'ОБЩИЕ ПРАВИЛА'}
