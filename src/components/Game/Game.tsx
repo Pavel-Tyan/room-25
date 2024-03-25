@@ -3,10 +3,11 @@ import { RoundCounter } from '../RoundCounter/RoundCounter';
 import styles from './Game.module.css';
 import { Room } from '@/constants/room.constants';
 import { GameCard } from '../GameCard/GameCard';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { SelectActions } from '../SelectActions/SelectActions';
 import { PlayersTable } from '../PlayersTable/PlayersTable';
 import { GameAction } from '@/constants/action.constants';
+import { Button } from '../Button/Button';
 
 // Этот тип нужен для того, чтобы при использовании map()
 // у каждого элемента был уникальный ключ
@@ -60,20 +61,24 @@ export const Game = (): JSX.Element => {
     const [actionsCount, setActionsCount] = useState<number>(2);
 
     // Если игрок мертв, то его нет в массиве order
-    const order: number[] = [1, 2, 3, 4, 5, 6];
+    const [order, setOrder] = useState<number[]>([1, 2, 3, 4, 5, 6]);
 
     // Сдвигаем первого игрока на последнюю позицию во время хода
-    const changeOrder = (): void => {
-        if (order.length === 0) {
-            return;
+    const getChangedOrder = (oldOrder: number[]): number[] => {
+        const newOrder: number[] = [...oldOrder];
+
+        if (newOrder.length === 0) {
+            return newOrder;
         }
 
-        const firstPlayerIndex = order[0];
-        order.pop();
-        order.push(firstPlayerIndex);
+        const firstPlayerIndex = newOrder[0];
+        newOrder.shift();
+        newOrder.push(firstPlayerIndex);
+
+        return newOrder;
     };
 
-    const [roundsCount, setRoundsCount] = useState<number>(10);
+    const [roundsLeft, setRoundsLeft] = useState<number>(10);
     // Фаза программирования
     const [isProgrammingStage, setIsProgrammingStage] = useState<boolean>(false);
     // Фаза действия
@@ -87,14 +92,23 @@ export const Game = (): JSX.Element => {
     // Фаза отсчета
     const [isCountdownStage, setIsCountdownStage] = useState<boolean>(false);
 
+    useEffect(() => {
+        if (isCountdownStage) {
+            setOrder((prev) => getChangedOrder(prev));
+            console.log(order);
+        }
+
+        setIsCountdownStage(false);
+    }, [isCountdownStage]);
+
     return (
         <>
             <div className={styles.gameWrapper}>
-                <RoundCounter language={language} roundsLeft={10} />
+                <RoundCounter language={language} roundsLeft={roundsLeft} />
                 <div className={styles.rooms}>
                     {roomsInfo.map((currentRoom, i) => (
                         <GameCard
-                            key={currentRoom.key}
+                            key={`current room ${currentRoom.key}`}
                             // Центральная комната открыта в начале игры
                             hasOpened={isRoomOpened[i]}
                             hasPlayerInRoom={hasPlayerInRoom[i]}
@@ -116,6 +130,9 @@ export const Game = (): JSX.Element => {
                     order={order}
                 />
             </div>
+            <Button size='small' handleClick={() => setIsCountdownStage(true)}>
+                s
+            </Button>
             <SelectActions
                 onClose={() => setIsProgrammingStage(false)}
                 isOpen={isProgrammingStage}

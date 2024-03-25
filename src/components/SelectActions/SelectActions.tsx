@@ -6,7 +6,6 @@ import { Htag } from '../Htag/Htag';
 import { Button } from '../Button/Button';
 import { useState } from 'react';
 import cn from 'classnames';
-import { GameAction } from '@/constants/action.constants';
 import { ActionRadio } from '../ActionsRadio/ActionsRadio';
 
 export const SelectActions = ({

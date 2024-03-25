@@ -40,7 +40,7 @@ export const PlayersTable = ({
         <div className={styles.playersTable}>
             {order.map((playerNumber) => (
                 <div
-                    key={playerNumber}
+                    key={`key number: ${playerNumber}`}
                     className={cn(styles.playerInfoWrapper, {
                         [styles.playerActive]: activePlayer === playerNumber,
                     })}
