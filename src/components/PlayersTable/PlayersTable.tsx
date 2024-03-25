@@ -2,32 +2,17 @@ import { PlayersTableProps } from './PlayersTable.props';
 import styles from './PlayersTable.module.css';
 import Image from 'next/image';
 import { GameAction } from '@/constants/action.constants';
+import cn from 'classnames';
 
 type GameActionsInfo = {
     path: string;
     alt: string;
 };
-actionsInfo: [
-    {
-        path: './actions/eye.svg',
-        alt: '"Peek" action icon',
-    },
-    {
-        path: './actions/enter.svg',
-        alt: '"Enter" action icon',
-    },
-    {
-        path: './actions/push.svg',
-        alt: '"Push" action icon',
-    },
-    {
-        path: './actions/control.svg',
-        alt: '"Control" action icon',
-    },
-];
+
 export const PlayersTable = ({
     playersActions,
     order,
+    activePlayer,
 }: PlayersTableProps): JSX.Element => {
     const actionsInfo = new Map<GameAction, GameActionsInfo>();
     actionsInfo.set(GameAction.Peek, {
@@ -54,7 +39,12 @@ export const PlayersTable = ({
     return (
         <div className={styles.playersTable}>
             {order.map((playerNumber) => (
-                <div key={playerNumber} className={styles.playerInfoWrapper}>
+                <div
+                    key={playerNumber}
+                    className={cn(styles.playerInfoWrapper, {
+                        [styles.playerActive]: activePlayer === playerNumber,
+                    })}
+                >
                     <div>{playerNumber}</div>
                     <div>
                         <Image

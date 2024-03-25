@@ -18,3 +18,9 @@
 .playerInfoWrapper:last-child {
     border: none;
 }
+
+.playerActive {
+    background-color: var(--gray-dark);
+    border-radius: 10px;
+    border: none;
+}

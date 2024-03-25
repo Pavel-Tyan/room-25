@@ -82,6 +82,7 @@ export const Game = (): JSX.Element => {
     // Действия
     const [firstAction, setFirstAction] = useState<GameAction>(GameAction.Peek);
     const [secondAction, setSecondAction] = useState<GameAction>(GameAction.Peek);
+    const [activePlayer, setActivePlayer] = useState<number>(1);
 
     // Фаза отсчета
     const [isCountdownStage, setIsCountdownStage] = useState<boolean>(false);
@@ -111,6 +112,7 @@ export const Game = (): JSX.Element => {
                         [GameAction.Unknown, GameAction.Unknown],
                         [GameAction.Unknown, GameAction.Unknown],
                     ]}
+                    activePlayer={activePlayer}
                     order={order}
                 />
             </div>
