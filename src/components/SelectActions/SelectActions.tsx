@@ -10,7 +10,6 @@ import { GameAction } from '@/constants/action.constants';
 import { ActionRadio } from '../ActionsRadio/ActionsRadio';
 
 export const SelectActions = ({
-    // Нужно менять IsOpen через setIsOpen, которая в родительском компоненте
     onClose,
     isOpen,
     language,

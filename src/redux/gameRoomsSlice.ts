@@ -5,11 +5,13 @@ import type { PayloadAction } from '@reduxjs/toolkit';
 
 const ROOMS_COUNT = 25;
 const CENTRAL_ROOM_INDEX = 12;
-const ROOM25_INDICES = new Set<number>([0, 1, 3, 4, 5, 9, 15, 19, 20, 21, 23, 24]); // Комната 25 может находиться только в угловых зонах.
+const CORNER_INDICES = new Set<number>([0, 1, 3, 4, 5, 9, 15, 19, 20, 21, 23, 24]); // Комната 25 может находиться только в угловых зонах.
 
+// Первыми в массивах должны стоять Room25, ControlRoom, CentralRoom
 const roomsForBeginnerMode: Room[] = [
     Room.CentralRoom,
     Room.Room25,
+    Room.ControlRoom,
     Room.EmptyRoom,
     Room.EmptyRoom,
     Room.EmptyRoom,
@@ -32,11 +34,11 @@ const roomsForBeginnerMode: Room[] = [
     Room.WhirlpoolRoom,
     Room.DeathRoom,
     Room.ObservationRoom,
-    Room.ControlRoom,
 ];
 const roomsForExpertMode: Room[] = [
     Room.CentralRoom,
     Room.Room25,
+    Room.ControlRoom,
     Room.EmptyRoom,
     Room.EmptyRoom,
     Room.EmptyRoom,
@@ -58,7 +60,6 @@ const roomsForExpertMode: Room[] = [
     Room.DeathRoom,
     Room.WhirlpoolRoom,
     Room.ObservationRoom,
-    Room.ControlRoom,
     Room.IllusionRoom,
 ];
 
@@ -77,7 +78,11 @@ const getRandomOrderedRooms = (unorderedRooms: Room[]): Room[] => {
         let roomIndex = getRandomInt(0, ROOMS_COUNT);
 
         if (room === Room.Room25) {
-            while (isRoomDetermined[roomIndex] || !ROOM25_INDICES.has(roomIndex)) {
+            while (isRoomDetermined[roomIndex] || !CORNER_INDICES.has(roomIndex)) {
+                roomIndex = getRandomInt(0, ROOMS_COUNT);
+            }
+        } else if (room === Room.ControlRoom) {
+            while (isRoomDetermined[roomIndex] || !CORNER_INDICES.has(roomIndex)) {
                 roomIndex = getRandomInt(0, ROOMS_COUNT);
             }
         } else {
