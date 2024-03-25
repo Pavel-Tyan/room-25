@@ -78,6 +78,11 @@ export const Game = (): JSX.Element => {
     const [isProgrammingStage, setIsProgrammingStage] = useState<boolean>(false);
     // Фаза действия
     const [isActionStage, setIsActionStage] = useState<boolean>(false);
+
+    // Действия
+    const [firstAction, setFirstAction] = useState<GameAction>(GameAction.Peek);
+    const [secondAction, setSecondAction] = useState<GameAction>(GameAction.Peek);
+
     // Фаза отсчета
     const [isCountdownStage, setIsCountdownStage] = useState<boolean>(false);
 
@@ -109,13 +114,17 @@ export const Game = (): JSX.Element => {
                     order={order}
                 />
             </div>
-            {/* <SelectActions
+            <SelectActions
                 onClose={() => setIsProgrammingStage(false)}
                 isOpen={isProgrammingStage}
                 language={language}
                 setActionsCount={setActionsCount}
                 doNextStage={() => setIsActionStage(true)}
-            /> */}
+                firstAction={firstAction}
+                secondAction={secondAction}
+                setFirstAction={(action: GameAction) => setFirstAction(action)}
+                setSecondAction={(action: GameAction) => setSecondAction(action)}
+            />
         </>
     );
 };

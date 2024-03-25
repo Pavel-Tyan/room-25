@@ -15,6 +15,10 @@ export const SelectActions = ({
     language,
     setActionsCount,
     doNextStage,
+    firstAction,
+    secondAction,
+    setFirstAction,
+    setSecondAction,
 }: SelectActionsProps): JSX.Element => {
     const [isSelectCountPopupOpen, setIsSelectCountPopupOpen] = useState<boolean>(true);
 
@@ -46,9 +50,6 @@ export const SelectActions = ({
         onClose();
         doNextStage();
     };
-
-    const [firstAction, setFirstAction] = useState<GameAction>(GameAction.Peek);
-    const [secondAction, setSecondAction] = useState<GameAction>(GameAction.Peek);
 
     return (
         <div
