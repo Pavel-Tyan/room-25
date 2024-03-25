@@ -8,5 +8,5 @@
 .rooms {
     display: grid;
     grid-template-columns: repeat(5, 1fr);
-    gap: 4px 4px;
+    gap: 5px 5px;
 }

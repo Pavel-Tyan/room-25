@@ -5,10 +5,18 @@
     justify-content: center;
     width: 25px;
     height: 40px;
-    background: var(--primary);
+    background: var(--primary) !important;
     border-radius: 10px;
     border: 0.5px solid var(--secondary);
     position: absolute;
+}
+
+.playerWrapper div {
+    background: var(--primary) !important;
+}
+
+.playerNumber {
+    color: var(--secondary);
 }
 
 .player1 {

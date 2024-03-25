@@ -7,7 +7,6 @@ import { useEffect, useState } from 'react';
 import { SelectActions } from '../SelectActions/SelectActions';
 import { PlayersTable } from '../PlayersTable/PlayersTable';
 import { GameAction } from '@/constants/action.constants';
-import { Button } from '../Button/Button';
 
 // Этот тип нужен для того, чтобы при использовании map()
 // у каждого элемента был уникальный ключ
@@ -92,6 +91,7 @@ export const Game = (): JSX.Element => {
     // Фаза отсчета
     const [isCountdownStage, setIsCountdownStage] = useState<boolean>(false);
 
+    // Смена порядка игроков
     useEffect(() => {
         if (isCountdownStage) {
             setOrder((prev) => getChangedOrder(prev));
@@ -114,6 +114,7 @@ export const Game = (): JSX.Element => {
                             hasPlayerInRoom={hasPlayerInRoom[i]}
                             room={currentRoom.room}
                             language={language}
+                            isAvailable={false}
                         ></GameCard>
                     ))}
                 </div>
@@ -130,9 +131,6 @@ export const Game = (): JSX.Element => {
                     order={order}
                 />
             </div>
-            <Button size='small' handleClick={() => setIsCountdownStage(true)}>
-                s
-            </Button>
             <SelectActions
                 onClose={() => setIsProgrammingStage(false)}
                 isOpen={isProgrammingStage}
