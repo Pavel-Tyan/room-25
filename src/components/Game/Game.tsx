@@ -115,6 +115,7 @@ export const Game = (): JSX.Element => {
                             room={currentRoom.room}
                             language={language}
                             isAvailable={false}
+                            handleClick={() => {}}
                         ></GameCard>
                     ))}
                 </div>
