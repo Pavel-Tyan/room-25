@@ -1,4 +1,6 @@
+import { GameAction } from '@/constants/action.constants';
+
 export interface PlayersTableProps {
-    isPlayerAlive: boolean[];
-    currentRound: number;
+    playersActions: GameAction[][];
+    order: number[];
 }

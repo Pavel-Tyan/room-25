@@ -5,4 +5,5 @@ export interface SelectActionsProps {
     isOpen: boolean;
     setActionsCount: (actionsCount: number) => void;
     onClose: () => void;
+    doNextStage: () => void;
 }

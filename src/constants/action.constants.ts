@@ -3,4 +3,5 @@ export enum GameAction {
     Enter,
     Push,
     Control,
+    Unknown,
 }

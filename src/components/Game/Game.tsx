@@ -5,6 +5,8 @@ import { Room } from '@/constants/room.constants';
 import { GameCard } from '../GameCard/GameCard';
 import { useState } from 'react';
 import { SelectActions } from '../SelectActions/SelectActions';
+import { PlayersTable } from '../PlayersTable/PlayersTable';
+import { GameAction } from '@/constants/action.constants';
 
 // Этот тип нужен для того, чтобы при использовании map()
 // у каждого элемента был уникальный ключ
@@ -38,6 +40,7 @@ export const Game = (): JSX.Element => {
         });
     }
 
+    // Расположение игроков в комнатах
     const hasPlayerInRoom: boolean[][] = Array(25).fill([
         false,
         false,
@@ -48,10 +51,35 @@ export const Game = (): JSX.Element => {
     ]);
     hasPlayerInRoom[12] = [true, true, true, true, true, true];
 
+    // Какая из комнат открыта
+    const initialRoomState: boolean[] = Array(25).fill(false);
+    initialRoomState[12] = true;
+    const [isRoomOpened, setIsRoomOpened] = useState<boolean[]>(initialRoomState);
+
     // Количество действий, который выбрал игрок
     const [actionsCount, setActionsCount] = useState<number>(2);
-    // Открыто ли модальное окно для выбора действий
-    const [isSelectActionsOpen, setIsSelectActionsOpen] = useState<boolean>(true);
+
+    // Если игрок мертв, то его нет в массиве order
+    const order: number[] = [1, 2, 3, 4, 5, 6];
+
+    // Сдвигаем первого игрока на последнюю позицию во время хода
+    const changeOrder = (): void => {
+        if (order.length === 0) {
+            return;
+        }
+
+        const firstPlayerIndex = order[0];
+        order.pop();
+        order.push(firstPlayerIndex);
+    };
+
+    const [roundsCount, setRoundsCount] = useState<number>(10);
+    // Фаза программирования
+    const [isProgrammingStage, setIsProgrammingStage] = useState<boolean>(false);
+    // Фаза действия
+    const [isActionStage, setIsActionStage] = useState<boolean>(false);
+    // Фаза отсчета
+    const [isCountdownStage, setIsCountdownStage] = useState<boolean>(false);
 
     return (
         <>
@@ -62,20 +90,32 @@ export const Game = (): JSX.Element => {
                         <GameCard
                             key={currentRoom.key}
                             // Центральная комната открыта в начале игры
-                            hasOpened={i == 12 ? true : false}
+                            hasOpened={isRoomOpened[i]}
                             hasPlayerInRoom={hasPlayerInRoom[i]}
                             room={currentRoom.room}
                             language={language}
                         ></GameCard>
                     ))}
                 </div>
+                <PlayersTable
+                    playersActions={[
+                        [GameAction.Unknown, GameAction.Unknown],
+                        [GameAction.Unknown, GameAction.Unknown],
+                        [GameAction.Unknown, GameAction.Unknown],
+                        [GameAction.Unknown, GameAction.Unknown],
+                        [GameAction.Unknown, GameAction.Unknown],
+                        [GameAction.Unknown, GameAction.Unknown],
+                    ]}
+                    order={order}
+                />
             </div>
-            <SelectActions
-                onClose={() => setIsSelectActionsOpen(false)}
-                isOpen={isSelectActionsOpen}
+            {/* <SelectActions
+                onClose={() => setIsProgrammingStage(false)}
+                isOpen={isProgrammingStage}
                 language={language}
                 setActionsCount={setActionsCount}
-            />
+                doNextStage={() => setIsActionStage(true)}
+            /> */}
         </>
     );
 };
