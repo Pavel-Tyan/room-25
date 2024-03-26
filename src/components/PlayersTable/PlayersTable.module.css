@@ -24,3 +24,7 @@
     border-radius: 10px;
     border: none;
 }
+
+.playerInfoNumber {
+    height: 40px;
+}

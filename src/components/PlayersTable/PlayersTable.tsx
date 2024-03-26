@@ -46,30 +46,20 @@ export const PlayersTable = ({
                     })}
                 >
                     <div>{playerNumber}</div>
-                    <div>
-                        <Image
-                            src={
-                                actionsInfo.get(playersActions[playerNumber - 1][0])?.path
-                            }
-                            alt={
-                                actionsInfo.get(playersActions[playerNumber - 1][0])?.alt
-                            }
-                            width={40}
-                            height={40}
-                        />
-                    </div>
-                    <div>
-                        <Image
-                            src={
-                                actionsInfo.get(playersActions[playerNumber - 1][1])?.path
-                            }
-                            alt={
-                                actionsInfo.get(playersActions[playerNumber - 1][1])?.alt
-                            }
-                            width={40}
-                            height={40}
-                        />
-                    </div>
+
+                    <Image
+                        src={actionsInfo.get(playersActions[playerNumber - 1][0])?.path}
+                        alt={actionsInfo.get(playersActions[playerNumber - 1][0])?.alt}
+                        width={40}
+                        height={40}
+                    />
+
+                    <Image
+                        src={actionsInfo.get(playersActions[playerNumber - 1][1])?.path}
+                        alt={actionsInfo.get(playersActions[playerNumber - 1][1])?.alt}
+                        width={40}
+                        height={40}
+                    />
                 </div>
             ))}
         </div>

@@ -7,17 +7,21 @@ import { Button } from '../Button/Button';
 import { useState } from 'react';
 import cn from 'classnames';
 import { ActionRadio } from '../ActionsRadio/ActionsRadio';
+import { GameAction } from '@/constants/action.constants';
 
 export const SelectActions = ({
     onClose,
+    playerNumber,
     isOpen,
     language,
     setActionsCount,
-    doNextStage,
     firstAction,
     secondAction,
     setFirstAction,
     setSecondAction,
+    setActions,
+    oldActions,
+    doNext = () => {},
 }: SelectActionsProps): JSX.Element => {
     const [isSelectCountPopupOpen, setIsSelectCountPopupOpen] = useState<boolean>(true);
 
@@ -38,16 +42,33 @@ export const SelectActions = ({
         setIsSelectTwoActionsPopupOpen(true);
     };
 
+    const getUpdatedActions = (
+        oldActions: GameAction[][],
+        playerNumber: number
+    ): GameAction[][] => {
+        const updatedActions: GameAction[][] = [];
+
+        for (let i = 0; i < oldActions.length; i++) {
+            updatedActions.push(oldActions[i].slice(0));
+        }
+
+        updatedActions[playerNumber - 1] = [firstAction, secondAction];
+
+        return updatedActions;
+    };
+
     const submitSelectedOneAction = (): void => {
         setIsSelectOneActionPopupOpen(false);
+        setActions(getUpdatedActions(oldActions, playerNumber));
         onClose();
-        doNextStage();
+        doNext();
     };
 
     const submitSelectedTwoActions = (): void => {
         setIsSelectTwoActionsPopupOpen(false);
+        setActions(getUpdatedActions(oldActions, playerNumber));
         onClose();
-        doNextStage();
+        doNext();
     };
 
     return (
@@ -59,9 +80,11 @@ export const SelectActions = ({
             <Popup
                 language={language}
                 hasCloseButton={false}
-                isOpen={isSelectCountPopupOpen}
+                isOpen={isOpen && isSelectCountPopupOpen}
                 title={
-                    language === Language.Russian ? 'ВЫБОР ДЕЙСТВИЙ' : 'CHOICE OF ACTIONS'
+                    language === Language.Russian
+                        ? `ИГРОК ${playerNumber}`
+                        : `PLAYER ${playerNumber}`
                 }
             >
                 <div className={styles.selectCountWrapper}>

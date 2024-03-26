@@ -56,9 +56,6 @@ export const Game = (): JSX.Element => {
     initialRoomState[12] = true;
     const [isRoomOpened, setIsRoomOpened] = useState<boolean[]>(initialRoomState);
 
-    // Количество действий, который выбрал игрок
-    const [actionsCount, setActionsCount] = useState<number>(2);
-
     // Если игрок мертв, то его нет в массиве order
     const [order, setOrder] = useState<number[]>([1, 2, 3, 4, 5, 6]);
 
@@ -80,13 +77,59 @@ export const Game = (): JSX.Element => {
     const [roundsLeft, setRoundsLeft] = useState<number>(10);
     // Фаза программирования
     const [isProgrammingStage, setIsProgrammingStage] = useState<boolean>(false);
+    // Количество действий, который выбрал первый игрок
+    const [firstPlayerActionsCount, setFirstPlayerActionsCount] = useState<number>(2);
+    // Количество действий, который выбрал второй игрок
+    const [secondPlayerActionsCount, setSecondPlayerActionsCount] = useState<number>(2);
+    // Переменные нужны для открытия модальных окон выбора действий 1ого и 2ого игрока
+    const [isFirstSelectPopupOpened, setIsFirstSelectPopupOpened] =
+        useState<boolean>(true);
+    const [isSecondSelectPopupOpened, setIsSecondSelectPopupOpened] =
+        useState<boolean>(false);
+    // Действия первого игрока
+    const [firstPlayerFirstAction, setFirstPlayerFirstAction] = useState<GameAction>(
+        GameAction.Peek
+    );
+    const [firstPlayerSecondAction, setFirstPlayerSecondAction] = useState<GameAction>(
+        GameAction.Peek
+    );
+    // Действия второго игрока
+    const [secondPlayerFirstAction, setSecondPlayerFirstAction] = useState<GameAction>(
+        GameAction.Peek
+    );
+    const [secondPlayerSecondAction, setSecondPlayerSecondAction] = useState<GameAction>(
+        GameAction.Peek
+    );
+
+    const [playersActions, setPlayersActions] = useState<GameAction[][]>([
+        [GameAction.Unknown, GameAction.Unknown],
+        [GameAction.Unknown, GameAction.Unknown],
+        [GameAction.Unknown, GameAction.Unknown],
+        [GameAction.Unknown, GameAction.Unknown],
+        [GameAction.Unknown, GameAction.Unknown],
+        [GameAction.Unknown, GameAction.Unknown],
+    ]);
+
+    useEffect(() => {
+        if (isProgrammingStage) {
+            setIsFirstSelectPopupOpened(true);
+            setIsProgrammingStage(false);
+            // Переходим в фазу действия
+            setIsActionStage(true);
+        }
+    }, [isProgrammingStage]);
+
     // Фаза действия
     const [isActionStage, setIsActionStage] = useState<boolean>(false);
-
-    // Действия
-    const [firstAction, setFirstAction] = useState<GameAction>(GameAction.Peek);
-    const [secondAction, setSecondAction] = useState<GameAction>(GameAction.Peek);
     const [activePlayer, setActivePlayer] = useState<number>(1);
+
+    useEffect(() => {
+        if (isActionStage) {
+            setIsActionStage(false);
+            // Переходим в фазу отсчета
+            setIsCountdownStage(true);
+        }
+    }, [isActionStage]);
 
     // Фаза отсчета
     const [isCountdownStage, setIsCountdownStage] = useState<boolean>(false);
@@ -95,10 +138,10 @@ export const Game = (): JSX.Element => {
     useEffect(() => {
         if (isCountdownStage) {
             setOrder((prev) => getChangedOrder(prev));
-            console.log(order);
+            setIsCountdownStage(false);
+            // Переходим в фазу программирования
+            setIsProgrammingStage(true);
         }
-
-        setIsCountdownStage(false);
     }, [isCountdownStage]);
 
     return (
@@ -115,33 +158,49 @@ export const Game = (): JSX.Element => {
                             room={currentRoom.room}
                             language={language}
                             isAvailable={false}
+                            // Обработка клика с условием
                             handleClick={() => {}}
                         ></GameCard>
                     ))}
                 </div>
                 <PlayersTable
-                    playersActions={[
-                        [GameAction.Unknown, GameAction.Unknown],
-                        [GameAction.Unknown, GameAction.Unknown],
-                        [GameAction.Unknown, GameAction.Unknown],
-                        [GameAction.Unknown, GameAction.Unknown],
-                        [GameAction.Unknown, GameAction.Unknown],
-                        [GameAction.Unknown, GameAction.Unknown],
-                    ]}
+                    playersActions={playersActions}
                     activePlayer={activePlayer}
                     order={order}
                 />
             </div>
-            <SelectActions
-                onClose={() => setIsProgrammingStage(false)}
-                isOpen={isProgrammingStage}
+            <SelectActions /* Для первого игрока */
+                playerNumber={1}
+                onClose={() => setIsFirstSelectPopupOpened(false)}
+                isOpen={isFirstSelectPopupOpened}
                 language={language}
-                setActionsCount={setActionsCount}
-                doNextStage={() => setIsActionStage(true)}
-                firstAction={firstAction}
-                secondAction={secondAction}
-                setFirstAction={(action: GameAction) => setFirstAction(action)}
-                setSecondAction={(action: GameAction) => setSecondAction(action)}
+                setActionsCount={setFirstPlayerActionsCount}
+                firstAction={firstPlayerFirstAction}
+                secondAction={firstPlayerSecondAction}
+                setFirstAction={(action: GameAction) => setFirstPlayerFirstAction(action)}
+                setSecondAction={(action: GameAction) =>
+                    setFirstPlayerSecondAction(action)
+                }
+                doNext={() => setIsSecondSelectPopupOpened(true)}
+                oldActions={playersActions}
+                setActions={(actions: GameAction[][]) => setPlayersActions(actions)}
+            />
+            <SelectActions /* Для второго игрока */
+                playerNumber={2}
+                onClose={() => setIsSecondSelectPopupOpened(false)}
+                isOpen={isSecondSelectPopupOpened}
+                language={language}
+                setActionsCount={setSecondPlayerActionsCount}
+                firstAction={secondPlayerFirstAction}
+                secondAction={secondPlayerSecondAction}
+                setFirstAction={(action: GameAction) =>
+                    setSecondPlayerFirstAction(action)
+                }
+                setSecondAction={(action: GameAction) =>
+                    setSecondPlayerSecondAction(action)
+                }
+                oldActions={playersActions}
+                setActions={(actions: GameAction[][]) => setPlayersActions(actions)}
             />
         </>
     );
