@@ -18,6 +18,7 @@ export const GameCard = ({
     room,
     language,
     isAvailable,
+    handleClick,
 }: GameCardProps): JSX.Element => {
     let cardsInfoMap = new Map<Room, CardInfo>();
     let cardsInfo: CardInfo[];
@@ -37,6 +38,7 @@ export const GameCard = ({
             className={cn(styles.button, {
                 [styles.activeButton]: isAvailable,
             })}
+            onClick={handleClick}
         >
             <Card color={hasOpened ? 'white' : 'black'}>
                 <Image

@@ -2,20 +2,22 @@
     background: none;
     border-radius: 10px;
     border: none;
+    transition: all 0.3s;
 }
 
 .activeButton {
-    border: 2px solid var(--secondary);
     background: var(--gray-dark);
     cursor: pointer;
+    transition: all 0.3s;
 }
 
 .activeButton div {
     background: var(--gray-dark);
+    transition: all 0.3s;
 }
 
 .activeButton > div:hover,
 .activeButton {
     background: var(--secondary);
-    border: 1px solid var(--secondary);
+    transition: all 0.3s;
 }

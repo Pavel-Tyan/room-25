@@ -6,7 +6,7 @@ import { GameCard } from '../GameCard/GameCard';
 import { useEffect, useState } from 'react';
 import { SelectActions } from '../SelectActions/SelectActions';
 import { PlayersTable } from '../PlayersTable/PlayersTable';
-import { GameAction } from '@/constants/action.constants';
+import { GameAction, RoomClickHandler } from '@/constants/action.constants';
 import { ChooseRound } from '../ChooseRound/ChooseRound';
 
 // Этот тип нужен для того, чтобы при использовании map()
@@ -41,7 +41,10 @@ export const Game = (): JSX.Element => {
             key: i,
         });
     }
-
+    // Обработчики клика для комнат
+    const [clickHandlers, setClickHandlers] = useState<RoomClickHandler[]>(
+        Array(25).fill(() => {})
+    );
     // Фаза программирования
     const [isProgrammingStage, setIsProgrammingStage] = useState<boolean>(false);
     // Количество действий, который выбрал первый игрок
@@ -213,18 +216,6 @@ export const Game = (): JSX.Element => {
         }
     };
 
-    const showPeekAvailableRooms = (playerNumber: number): void => {
-        const roomIndex = findPlayerRoomIndex(playerNumber);
-        const neighbourRooms = findNeighbourRooms(roomIndex);
-        const isRoomAvailable: boolean[] = Array(25).fill(false);
-
-        for (let roomIndex of neighbourRooms) {
-            isRoomAvailable[roomIndex] = true;
-        }
-
-        setIsRoomAvailable(isRoomAvailable);
-    };
-
     const swapActions = (playerNumber: number): void => {
         const updatedActions: GameAction[][] = [];
 
@@ -239,25 +230,87 @@ export const Game = (): JSX.Element => {
         setPlayersActions(updatedActions);
     };
 
-    const doAction = (action: GameAction, playerNumber: number): void => {
-        if (playerNumber === 1 || playerNumber === 2) {
+    const peekActionHandleClick: RoomClickHandler = (
+        roomIndex: number,
+        playerNumber: number,
+        neighbourRooms: number[]
+    ) => {
+        const updatedIsRoomAvailable: boolean[] = [...isRoomAvailable];
+        for (let roomIndex of neighbourRooms) {
+            updatedIsRoomAvailable[roomIndex] = false;
+        }
+        setIsRoomAvailable(updatedIsRoomAvailable);
+
+        const updatedIsRoomOpened = [...isRoomOpened];
+        updatedIsRoomOpened[roomIndex] = true;
+        setIsRoomOpened(updatedIsRoomOpened);
+
+        setTimeout(() => {
+            const updatedIsRoomOpened = [...isRoomOpened];
+            updatedIsRoomOpened[roomIndex] = false;
+            setIsRoomOpened(updatedIsRoomOpened);
+        }, 2000);
+    };
+
+    const showPeekAvailableRooms = (playerNumber: number): void => {
+        const roomIndex = findPlayerRoomIndex(playerNumber);
+        const neighbourRooms = findNeighbourRooms(roomIndex);
+
+        const updatedClickHandlers = [...clickHandlers];
+
+        const isRoomAvailable: boolean[] = Array(25).fill(false);
+        for (let roomIndex of neighbourRooms) {
+            isRoomAvailable[roomIndex] = true;
+            updatedClickHandlers[roomIndex] = () => {
+                peekActionHandleClick(roomIndex, playerNumber, neighbourRooms);
+            };
+        }
+        setIsRoomAvailable(isRoomAvailable);
+        setClickHandlers(updatedClickHandlers);
+    };
+
+    const showEnterAvailableRooms = (playerNumber: number): void => {
+        const roomIndex = findPlayerRoomIndex(playerNumber);
+        const neighbourRooms = findNeighbourRooms(roomIndex);
+        const isRoomAvailable: boolean[] = Array(25).fill(false);
+
+        for (let roomIndex of neighbourRooms) {
+            isRoomAvailable[roomIndex] = true;
+        }
+
+        setIsRoomAvailable(isRoomAvailable);
+    };
+
+    const showPushAvailableRooms = (playerNumber: number): void => {};
+
+    const showControlAvailableRooms = (playerNumber: number): void => {};
+
+    const showPossibleMoves = (action: GameAction, playerNumber: number): void => {
+        if (playerNumber !== 1 && playerNumber !== 2) {
+            // Если попался бот
+            return;
+        } else {
             switch (action) {
                 case GameAction.Peek: {
-                    showPeekAvailableRooms;
+                    showPeekAvailableRooms(playerNumber);
                     return;
                 }
                 case GameAction.Enter: {
+                    showEnterAvailableRooms(playerNumber);
                     return;
                 }
                 case GameAction.Push: {
+                    showPushAvailableRooms(playerNumber);
                     return;
                 }
                 case GameAction.Control: {
+                    showControlAvailableRooms(playerNumber);
+                    return;
+                }
+                default: {
                     return;
                 }
             }
-        } else {
-            // Действие ботов
         }
     };
 
@@ -305,8 +358,9 @@ export const Game = (): JSX.Element => {
 
     useEffect(() => {
         if (isPlayerDoActionStage) {
+            showPossibleMoves(GameAction.Peek, 1);
+            //
             setIsPlayerDoActionStage(false);
-            setIsDoActionStage(true);
         }
     }, [isPlayerDoActionStage]);
 
@@ -365,7 +419,7 @@ export const Game = (): JSX.Element => {
                             language={language}
                             isAvailable={isRoomAvailable[i]}
                             // Обработка клика с условием
-                            handleClick={() => {}}
+                            handleClick={clickHandlers[i]}
                         ></GameCard>
                     ))}
                 </div>

@@ -1,3 +1,4 @@
+import { RoomClickHandler } from '@/constants/action.constants';
 import { Language } from '@/constants/language.constants';
 import { Room } from '@/constants/room.constants';
 import { DetailedHTMLProps, ButtonHTMLAttributes } from 'react';
