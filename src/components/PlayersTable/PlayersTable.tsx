@@ -48,14 +48,18 @@ export const PlayersTable = ({
                     <div>{playerNumber}</div>
 
                     <Image
+                        // @ts-ignore
                         src={actionsInfo.get(playersActions[playerNumber - 1][0])?.path}
+                        // @ts-ignore
                         alt={actionsInfo.get(playersActions[playerNumber - 1][0])?.alt}
                         width={40}
                         height={40}
                     />
 
                     <Image
+                        // @ts-ignore
                         src={actionsInfo.get(playersActions[playerNumber - 1][1])?.path}
+                        // @ts-ignore
                         alt={actionsInfo.get(playersActions[playerNumber - 1][1])?.alt}
                         width={40}
                         height={40}

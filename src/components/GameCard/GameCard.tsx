@@ -44,7 +44,9 @@ export const GameCard = ({
                 <Image
                     width={50}
                     height={50}
+                    // @ts-ignore
                     src={hasOpened ? cardsInfoMap.get(room).path : './question.svg'}
+                    // @ts-ignore
                     alt={hasOpened ? cardsInfoMap.get(room).alt : 'question mark icon'}
                 />
                 {/* Здесь можно проверить на hasOpened */}

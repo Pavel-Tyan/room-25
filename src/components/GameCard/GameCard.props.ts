@@ -13,6 +13,5 @@ export interface GameCardProps
     room: Room;
     language: Language;
     isAvailable: boolean;
-    // Нужно передавать сюда информацию о действии
     handleClick: () => void;
 }

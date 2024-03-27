@@ -32,6 +32,7 @@ export const SelectActions = ({
 
     const submitOneAction = (): void => {
         setActionsCount(1);
+        setSecondAction(GameAction.Unknown);
         setIsSelectCountPopupOpen(false);
         setIsSelectOneActionPopupOpen(true);
     };

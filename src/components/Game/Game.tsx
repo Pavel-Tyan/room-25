@@ -27,7 +27,7 @@ export const Game = (): JSX.Element => {
     } else {
         language = Language.Russian;
     }
-
+    // @ts-ignore
     const rooms: Room[] = sessionStorage
         .getItem('cards')
         ?.split('/')
@@ -42,7 +42,7 @@ export const Game = (): JSX.Element => {
         });
     }
     // Обработчики клика для комнат
-    const [clickHandlers, setClickHandlers] = useState<RoomClickHandler[]>(
+    const [clickHandlers, setClickHandlers] = useState<(() => void)[]>(
         Array(25).fill(() => {})
     );
     // Фаза программирования
@@ -61,14 +61,14 @@ export const Game = (): JSX.Element => {
         GameAction.Peek
     );
     const [firstPlayerSecondAction, setFirstPlayerSecondAction] = useState<GameAction>(
-        GameAction.Unknown
+        GameAction.Peek
     );
     // Действия второго игрока
     const [secondPlayerFirstAction, setSecondPlayerFirstAction] = useState<GameAction>(
         GameAction.Peek
     );
     const [secondPlayerSecondAction, setSecondPlayerSecondAction] = useState<GameAction>(
-        GameAction.Unknown
+        GameAction.Peek
     );
 
     const [playersActions, setPlayersActions] = useState<GameAction[][]>([
@@ -85,21 +85,18 @@ export const Game = (): JSX.Element => {
             setIsFirstSelectPopupOpened(true);
             setIsProgrammingStage(false);
             // Переходим в фазу действия
-            setIsPlayerDoActionStage(true);
+            setIsActionStage(true);
         }
     }, [isProgrammingStage]);
 
     // Фаза действия
-    // Игрок выбирает как будет совершать действие
-    const [isPlayerDoActionStage, setIsPlayerDoActionStage] = useState<boolean>(false);
-    // Совершение действия
-    const [isDoActionStage, setIsDoActionStage] = useState<boolean>(false);
+    const [isActionStage, setIsActionStage] = useState<boolean>(false);
 
     const [activePlayer, setActivePlayer] = useState<number>(1);
     // Выполнил ли свой ход текцщий игрок
     const [hasDoneMove, setHasDoneMove] = useState<boolean>(false);
     // Расположение игроков в комнатах
-    const hasPlayerInRoom: boolean[][] = Array(25).fill([
+    const hasPlayerInRoomInitial: boolean[][] = Array(25).fill([
         false,
         false,
         false,
@@ -107,7 +104,10 @@ export const Game = (): JSX.Element => {
         false,
         false,
     ]);
-    hasPlayerInRoom[12] = [true, true, true, true, true, true];
+    hasPlayerInRoomInitial[12] = [true, true, true, true, true, true];
+
+    const [hasPlayerInRoom, setHasPlayerInRoom] =
+        useState<boolean[][]>(hasPlayerInRoomInitial);
 
     // Какая из комнат открыта
     const initialRoomState: boolean[] = Array(25).fill(false);
@@ -233,11 +233,13 @@ export const Game = (): JSX.Element => {
     const peekActionHandleClick: RoomClickHandler = (
         roomIndex: number,
         playerNumber: number,
-        neighbourRooms: number[]
+        otherRooms: number[]
     ) => {
+        // Удаляем обработчики на комнатах
+        setClickHandlers(Array(25).fill(() => {}));
         const updatedIsRoomAvailable: boolean[] = [...isRoomAvailable];
-        for (let roomIndex of neighbourRooms) {
-            updatedIsRoomAvailable[roomIndex] = false;
+        for (let currentRoomIndex of otherRooms) {
+            updatedIsRoomAvailable[currentRoomIndex] = false;
         }
         setIsRoomAvailable(updatedIsRoomAvailable);
 
@@ -259,26 +261,77 @@ export const Game = (): JSX.Element => {
         const updatedClickHandlers = [...clickHandlers];
 
         const isRoomAvailable: boolean[] = Array(25).fill(false);
-        for (let roomIndex of neighbourRooms) {
-            isRoomAvailable[roomIndex] = true;
-            updatedClickHandlers[roomIndex] = () => {
-                peekActionHandleClick(roomIndex, playerNumber, neighbourRooms);
+        for (let currentRoomIndex of neighbourRooms) {
+            const otherRooms: number[] = [];
+            for (let i = 0; i < neighbourRooms.length; i++) {
+                if (roomIndex !== neighbourRooms[i]) {
+                    otherRooms.push(neighbourRooms[i]);
+                }
+            }
+            otherRooms.push(currentRoomIndex);
+
+            isRoomAvailable[currentRoomIndex] = true;
+            updatedClickHandlers[currentRoomIndex] = () => {
+                peekActionHandleClick(currentRoomIndex, playerNumber, otherRooms);
             };
         }
         setIsRoomAvailable(isRoomAvailable);
         setClickHandlers(updatedClickHandlers);
     };
 
-    const showEnterAvailableRooms = (playerNumber: number): void => {
-        const roomIndex = findPlayerRoomIndex(playerNumber);
-        const neighbourRooms = findNeighbourRooms(roomIndex);
-        const isRoomAvailable: boolean[] = Array(25).fill(false);
+    const enterActionHandleClick: RoomClickHandler = (
+        roomIndex: number,
+        playerNumber: number,
+        otherRooms: number[]
+    ) => {
+        // Удаляем обработчики на комнатах
+        setClickHandlers(Array(25).fill(() => {}));
 
-        for (let roomIndex of neighbourRooms) {
-            isRoomAvailable[roomIndex] = true;
+        const updatedHasPlayerInRoom = [];
+
+        for (let roomInfo of hasPlayerInRoom) {
+            updatedHasPlayerInRoom.push([...roomInfo]);
         }
 
+        const updatedIsRoomAvailable: boolean[] = [...isRoomAvailable];
+        // Перемещение из 1 комнаты в другую
+        updatedHasPlayerInRoom[roomIndex][playerNumber - 1] = true;
+
+        for (let currentRoomIndex of otherRooms) {
+            updatedIsRoomAvailable[currentRoomIndex] = false;
+            updatedHasPlayerInRoom[currentRoomIndex][playerNumber - 1] = false;
+        }
+        // Открытие комнаты, в которую вошел игрок
+        const updatedIsRoomOpened = [...isRoomOpened];
+        updatedIsRoomOpened[roomIndex] = true;
+        setIsRoomOpened(updatedIsRoomOpened);
+        setHasPlayerInRoom(updatedHasPlayerInRoom);
+        setIsRoomAvailable(updatedIsRoomAvailable);
+    };
+
+    const showEnterAvailableRooms = (playerNumber: number): void => {
+        const currentRoomIndex = findPlayerRoomIndex(playerNumber);
+        const neighbourRooms = findNeighbourRooms(currentRoomIndex);
+
+        const updatedClickHandlers = [...clickHandlers];
+
+        const isRoomAvailable: boolean[] = Array(25).fill(false);
+        for (let roomIndex of neighbourRooms) {
+            const otherRooms: number[] = [];
+            for (let i = 0; i < neighbourRooms.length; i++) {
+                if (roomIndex !== neighbourRooms[i]) {
+                    otherRooms.push(neighbourRooms[i]);
+                }
+            }
+            otherRooms.push(currentRoomIndex);
+
+            isRoomAvailable[roomIndex] = true;
+            updatedClickHandlers[roomIndex] = () => {
+                enterActionHandleClick(roomIndex, playerNumber, otherRooms);
+            };
+        }
         setIsRoomAvailable(isRoomAvailable);
+        setClickHandlers(updatedClickHandlers);
     };
 
     const showPushAvailableRooms = (playerNumber: number): void => {};
@@ -357,20 +410,16 @@ export const Game = (): JSX.Element => {
     };
 
     useEffect(() => {
-        if (isPlayerDoActionStage) {
-            showPossibleMoves(GameAction.Peek, 1);
-            //
-            setIsPlayerDoActionStage(false);
+        if (isActionStage) {
+            //showPossibleMoves(GameAction.Peek, 1);
+            showPossibleMoves(GameAction.Enter, 1);
+            //setIsPlayerDoActionStage(false);
         }
-    }, [isPlayerDoActionStage]);
-
-    useEffect(() => {
-        if (isDoActionStage) {
-            setIsDoActionStage(false);
+        if (false /* условие перехода в фазу отсчета */) {
             // Переходим в фазу отсчета, если все игроки сделали свои ходы
             setIsCountdownStage(true);
         }
-    }, [isDoActionStage]);
+    }, [isActionStage]);
 
     // Фаза отсчета
     const [isCountdownStage, setIsCountdownStage] = useState<boolean>(false);
@@ -459,7 +508,7 @@ export const Game = (): JSX.Element => {
                 setSecondAction={(action: GameAction) =>
                     setSecondPlayerSecondAction(action)
                 }
-                doNext={() => setIsPlayerDoActionStage(true)}
+                doNext={() => setIsActionStage(true)}
                 oldActions={playersActions}
                 setActions={(actions: GameAction[][]) => setPlayersActions(actions)}
             />
