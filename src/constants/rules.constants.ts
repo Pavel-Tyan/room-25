@@ -97,9 +97,9 @@ The player no longer sees the effect of the room, i.e. it becomes closed again.`
         },
         {
             path: './actions/enter.svg',
-            description: `Enter. Персонаж перемещается в одну из соседних комнат. После этого комната
-становится открытой на все оставшиеся время игры. Эффект комнаты сразу
-применяется на вошедшего в нее персонажа.`,
+            description: `Enter. The character moves to one of the adjacent rooms. After this the room
+becomes open for the remaining time of the game. Room effect immediately
+applied to the character who entered it.`,
             alt: '"Enter" action icon',
         },
         {
