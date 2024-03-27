@@ -3,6 +3,8 @@
     justify-content: space-between;
     align-items: center;
     gap: 70px;
+    position: relative;
+    margin-top: 10px;
 }
 
 .rooms {

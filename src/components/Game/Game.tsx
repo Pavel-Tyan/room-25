@@ -8,6 +8,7 @@ import { SelectActions } from '../SelectActions/SelectActions';
 import { PlayersTable } from '../PlayersTable/PlayersTable';
 import { GameAction, RoomClickHandler } from '@/constants/action.constants';
 import { ChooseRound } from '../ChooseRound/ChooseRound';
+import { ArrowButton } from '../ArrowButton/ArrowButton';
 
 // Этот тип нужен для того, чтобы при использовании map()
 // у каждого элемента был уникальный ключ
@@ -411,7 +412,7 @@ export const Game = (): JSX.Element => {
 
     useEffect(() => {
         if (isActionStage) {
-            //showPossibleMoves(GameAction.Peek, 1);
+            // showPossibleMoves(GameAction.Peek, 1);
             showPossibleMoves(GameAction.Enter, 1);
             //setIsPlayerDoActionStage(false);
         }
@@ -477,6 +478,8 @@ export const Game = (): JSX.Element => {
                     activePlayer={activePlayer}
                     order={order}
                 />
+                <ArrowButton direction='horizontal' language={language} />
+                <ArrowButton direction='vertical' language={language} />
             </div>
             <SelectActions /* Для первого игрока */
                 playerNumber={1}

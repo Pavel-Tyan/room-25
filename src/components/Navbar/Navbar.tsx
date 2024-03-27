@@ -3,6 +3,7 @@ import { Button } from '../Button/Button';
 import { GameRules } from '../GameRules/GameRules';
 import { useState } from 'react';
 import { FinishGame } from '../FinishGame/FinishGame';
+import styles from './Navbar.module.css';
 
 export const Navbar = (): JSX.Element => {
     let language: Language;
@@ -17,7 +18,7 @@ export const Navbar = (): JSX.Element => {
     const [isFinishGameOpen, setIsFinishGameOpen] = useState<boolean>(false);
 
     return (
-        <nav>
+        <nav className={styles.navbar}>
             <Button size='small' handleClick={() => setIsFinishGameOpen(true)}>
                 {language === Language.Russian && 'ЗАВЕРШИТЬ ИГРУ'}
                 {language === Language.English && 'FINISH'}
