@@ -10,6 +10,7 @@ import { GameAction, RoomClickHandler } from '@/constants/action.constants';
 import { ChooseRound } from '../ChooseRound/ChooseRound';
 import { ArrowButton } from '../ArrowButton/ArrowButton';
 import { PlayersSelection } from '../PlayersSelection/PlayersSelection';
+import { ControlPanel } from '../ControlPanel/ControlPanel';
 
 // Этот тип нужен для того, чтобы при использовании map()
 // у каждого элемента был уникальный ключ
@@ -456,7 +457,7 @@ export const Game = (): JSX.Element => {
                         }
                         if (actionRoundNumber === 1 || firstPlayerActionsCount === 2) {
                             // Действие
-                            doAction(firstPlayerFirstAction, playerNumber);
+                            //doAction(firstPlayerFirstAction, playerNumber);
                         } else {
                             // Если игрок выбрал действовать во 2м раунде, то ставим действие 2м по порядку
                             swapActions(playerNumber);
@@ -468,7 +469,7 @@ export const Game = (): JSX.Element => {
                             firstPlayerActionsCount === 2
                         ) {
                             // Действие
-                            doAction(firstPlayerSecondAction, playerNumber);
+                            //doAction(firstPlayerSecondAction, playerNumber);
                         }
                     }
                     while (!hasDoneMove) {}
@@ -550,8 +551,11 @@ export const Game = (): JSX.Element => {
                     activePlayer={activePlayer}
                     order={order}
                 />
-                <ArrowButton direction='horizontal' language={language} />
-                <ArrowButton direction='vertical' language={language} />
+                <ControlPanel
+                    language={language}
+                    isVerticalShiftAvailable={true}
+                    isHorizontalShiftAvailable={true}
+                />
                 <PlayersSelection
                     closeSelection={() => setIsPlayersSelectionOpened(false)}
                     setHasPlayerInRoom={setHasPlayerInRoom}

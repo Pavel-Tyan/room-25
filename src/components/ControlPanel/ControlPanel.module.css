@@ -1,0 +1,19 @@
+.controlPanelWrapper {
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    top: 3%;
+    left: 1%;
+    gap: 10px;
+}
+
+.controlPanelTitle {
+    color: var(--secondary);
+}
+
+.controlPanelsButtons {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    align-items: center;
+}
