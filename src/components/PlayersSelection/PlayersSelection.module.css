@@ -1,0 +1,39 @@
+.playersSelectionWrapper {
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    bottom: 11%;
+    left: 0%;
+    gap: 10px;
+}
+
+.playersSelectionInfo {
+    display: flex;
+    justify-content: center;
+    gap: 5px;
+}
+
+.playerNumberButton {
+    color: var(--secondary);
+    background: var(--primary);
+    border-radius: 7px;
+    border: 2px solid var(--secondary);
+    text-align: center;
+    width: 30px;
+    height: 30px;
+    font-weight: bold;
+    font-size: 20px;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.playerNumberButton:hover {
+    background: var(--gray-dark);
+    transition: all 0.3s;
+}
+
+.playersSelectionTitle {
+    font-size: 25px;
+}

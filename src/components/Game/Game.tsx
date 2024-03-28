@@ -9,6 +9,7 @@ import { PlayersTable } from '../PlayersTable/PlayersTable';
 import { GameAction, RoomClickHandler } from '@/constants/action.constants';
 import { ChooseRound } from '../ChooseRound/ChooseRound';
 import { ArrowButton } from '../ArrowButton/ArrowButton';
+import { PlayersSelection } from '../PlayersSelection/PlayersSelection';
 
 // Этот тип нужен для того, чтобы при использовании map()
 // у каждого элемента был уникальный ключ
@@ -480,6 +481,10 @@ export const Game = (): JSX.Element => {
                 />
                 <ArrowButton direction='horizontal' language={language} />
                 <ArrowButton direction='vertical' language={language} />
+                <PlayersSelection
+                    language={language}
+                    canPlayerBeChoosen={hasPlayerInRoom[12]}
+                />
             </div>
             <SelectActions /* Для первого игрока */
                 playerNumber={1}
