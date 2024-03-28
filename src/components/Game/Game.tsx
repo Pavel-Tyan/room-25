@@ -336,7 +336,78 @@ export const Game = (): JSX.Element => {
         setClickHandlers(updatedClickHandlers);
     };
 
-    const showPushAvailableRooms = (playerNumber: number): void => {};
+    // Открыта ли панель, для выбора игрока, которого будут выталкивать
+    const [isPlayersSelectionOpened, setIsPlayersSelectionOpened] =
+        useState<boolean>(false);
+
+    const [neighbourPlayers, setNeighbourPlayers] = useState<boolean[]>([]);
+
+    const [roomIndex, setRoomIndex] = useState<number>(12);
+    const [otherRooms, setOtherRooms] = useState<number[]>([]);
+
+    const pushActionHandleClick: RoomClickHandler = (
+        roomIndex: number,
+        activePlayerNumber: number,
+        otherRooms: number[]
+    ) => {
+        // Удаляем обработчики на комнатах
+        setClickHandlers(Array(25).fill(() => {}));
+
+        const updatedIsRoomAvailable: boolean[] = [...isRoomAvailable];
+
+        for (let currentRoomIndex of otherRooms) {
+            updatedIsRoomAvailable[currentRoomIndex] = false;
+        }
+
+        // Открытие комнаты, в которую вошел игрок
+        const updatedIsRoomOpened = [...isRoomOpened];
+        updatedIsRoomOpened[roomIndex] = true;
+        setIsPlayersSelectionOpened(true);
+        setIsRoomOpened(updatedIsRoomOpened);
+        setIsRoomAvailable(updatedIsRoomAvailable);
+        setRoomIndex(roomIndex);
+        setOtherRooms([...otherRooms]);
+    };
+
+    const showPushAvailableRooms = (playerNumber: number): void => {
+        const currentRoomIndex = findPlayerRoomIndex(playerNumber);
+        const neighbourRooms = findNeighbourRooms(currentRoomIndex);
+
+        const updatedClickHandlers = [...clickHandlers];
+
+        const isRoomAvailable: boolean[] = Array(25).fill(false);
+
+        const updatedNeighbourPlayers = [];
+
+        for (let i = 0; i < hasPlayerInRoom[currentRoomIndex].length; i++) {
+            if (i === playerNumber - 1) {
+                // Мы не можем вытолкнуть себя
+                updatedNeighbourPlayers.push(false);
+            }
+
+            updatedNeighbourPlayers.push(hasPlayerInRoom[currentRoomIndex][i]);
+        }
+
+        setNeighbourPlayers(updatedNeighbourPlayers);
+
+        for (let roomIndex of neighbourRooms) {
+            const otherRooms: number[] = [];
+            for (let i = 0; i < neighbourRooms.length; i++) {
+                if (roomIndex !== neighbourRooms[i]) {
+                    otherRooms.push(neighbourRooms[i]);
+                }
+            }
+            otherRooms.push(currentRoomIndex);
+
+            isRoomAvailable[roomIndex] = true;
+
+            updatedClickHandlers[roomIndex] = () => {
+                pushActionHandleClick(roomIndex, playerNumber, otherRooms);
+            };
+        }
+        setIsRoomAvailable(isRoomAvailable);
+        setClickHandlers(updatedClickHandlers);
+    };
 
     const showControlAvailableRooms = (playerNumber: number): void => {};
 
@@ -414,7 +485,7 @@ export const Game = (): JSX.Element => {
     useEffect(() => {
         if (isActionStage) {
             // showPossibleMoves(GameAction.Peek, 1);
-            showPossibleMoves(GameAction.Enter, 1);
+            showPossibleMoves(GameAction.Push, 1);
             //setIsPlayerDoActionStage(false);
         }
         if (false /* условие перехода в фазу отсчета */) {
@@ -482,8 +553,14 @@ export const Game = (): JSX.Element => {
                 <ArrowButton direction='horizontal' language={language} />
                 <ArrowButton direction='vertical' language={language} />
                 <PlayersSelection
+                    closeSelection={() => setIsPlayersSelectionOpened(false)}
+                    setHasPlayerInRoom={setHasPlayerInRoom}
+                    hasPlayerInRoom={hasPlayerInRoom}
+                    roomIndex={roomIndex}
+                    otherRooms={otherRooms}
+                    isOpen={isPlayersSelectionOpened}
                     language={language}
-                    canPlayerBeChoosen={hasPlayerInRoom[12]}
+                    canPlayerBeChoosen={neighbourPlayers}
                 />
             </div>
             <SelectActions /* Для первого игрока */

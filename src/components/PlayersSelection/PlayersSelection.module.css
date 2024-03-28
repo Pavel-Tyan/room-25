@@ -4,9 +4,13 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    bottom: 11%;
+    top: 73%;
     left: 0%;
     gap: 10px;
+}
+
+.hidden {
+    display: none;
 }
 
 .playersSelectionInfo {
@@ -36,4 +40,16 @@
 
 .playersSelectionTitle {
     font-size: 25px;
+}
+
+.checked {
+    border: 2px solid var(--secondary);
+    background: var(--secondary);
+    color: var(--primary);
+}
+
+.checked:hover {
+    border: 2px solid var(--secondary);
+    background: var(--secondary);
+    color: var(--primary);
 }
