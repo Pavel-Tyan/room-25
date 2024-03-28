@@ -41,15 +41,3 @@
 .playersSelectionTitle {
     font-size: 25px;
 }
-
-.checked {
-    border: 2px solid var(--secondary);
-    background: var(--secondary);
-    color: var(--primary);
-}
-
-.checked:hover {
-    border: 2px solid var(--secondary);
-    background: var(--secondary);
-    color: var(--primary);
-}
