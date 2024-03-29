@@ -1,5 +1,4 @@
 import { Room } from '@/constants/room.constants';
-import { CardInfo } from '@/constants/rules.constants';
 import { useState } from 'react';
 import { Button } from '../Button/Button';
 import Image from 'next/image';
