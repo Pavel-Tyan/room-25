@@ -1,7 +1,7 @@
 import { Language } from '@/constants/language.constants';
 import { RoundCounter } from '../RoundCounter/RoundCounter';
 import styles from './Game.module.css';
-import { Room } from '@/constants/room.constants';
+import { Room, RoomInfo } from '@/constants/room.constants';
 import { GameCard } from '../GameCard/GameCard';
 import { useEffect, useState } from 'react';
 import { SelectActions } from '../SelectActions/SelectActions';
@@ -11,13 +11,6 @@ import { ChooseRound } from '../ChooseRound/ChooseRound';
 import { ArrowButton } from '../ArrowButton/ArrowButton';
 import { PlayersSelection } from '../PlayersSelection/PlayersSelection';
 import { ControlPanel } from '../ControlPanel/ControlPanel';
-
-// Этот тип нужен для того, чтобы при использовании map()
-// у каждого элемента был уникальный ключ
-type RoomInfo = {
-    room: Room;
-    key: number;
-};
 
 const ROOM_COUNT: number = 25;
 const ROUNDS_COUNT: number = 10;
@@ -36,14 +29,16 @@ export const Game = (): JSX.Element => {
         ?.split('/')
         .map((room) => Number(room));
 
-    const roomsInfo: RoomInfo[] = [];
+    const roomsInfoInitial: RoomInfo[] = [];
 
     for (let i = 0; i < rooms.length; i++) {
-        roomsInfo.push({
+        roomsInfoInitial.push({
             room: rooms[i],
             key: i,
         });
     }
+
+    const [roomsInfo, setRoomsInfo] = useState<RoomInfo[]>(roomsInfoInitial);
     // Обработчики клика для комнат
     const [clickHandlers, setClickHandlers] = useState<(() => void)[]>(
         Array(25).fill(() => {})
@@ -410,7 +405,19 @@ export const Game = (): JSX.Element => {
         setClickHandlers(updatedClickHandlers);
     };
 
-    const showControlAvailableRooms = (playerNumber: number): void => {};
+    const [isVerticalShiftAvailable, setIsVerticalShiftAvailable] =
+        useState<boolean>(false);
+    const [isHorizontalShiftAvailable, setIsHorizontalShiftAvailable] =
+        useState<boolean>(false);
+    const [isControlPanelOpened, setIsControlPanelOpened] = useState<boolean>(false);
+    const showControlAvailableRooms = (playerNumber: number): void => {
+        // Здесь должна быть проверка, что ряд комнат не содержит центральную
+        const currentRoomIndex = findPlayerRoomIndex(playerNumber);
+        setRoomIndex(currentRoomIndex);
+        setIsControlPanelOpened(true);
+        setIsVerticalShiftAvailable(true);
+        setIsHorizontalShiftAvailable(true);
+    };
 
     const showPossibleMoves = (action: GameAction, playerNumber: number): void => {
         if (playerNumber !== 1 && playerNumber !== 2) {
@@ -486,7 +493,7 @@ export const Game = (): JSX.Element => {
     useEffect(() => {
         if (isActionStage) {
             // showPossibleMoves(GameAction.Peek, 1);
-            showPossibleMoves(GameAction.Push, 1);
+            showPossibleMoves(GameAction.Control, 1);
             //setIsPlayerDoActionStage(false);
         }
         if (false /* условие перехода в фазу отсчета */) {
@@ -552,9 +559,18 @@ export const Game = (): JSX.Element => {
                     order={order}
                 />
                 <ControlPanel
+                    hasPlayerInRoom={hasPlayerInRoom}
+                    setHasPlayerInRoom={(hasPlayerInRoom: boolean[][]) =>
+                        setHasPlayerInRoom(hasPlayerInRoom)
+                    }
+                    setRoomsInfo={(roomsInfo: RoomInfo[]) => setRoomsInfo(roomsInfo)}
+                    roomsInfo={roomsInfo}
                     language={language}
-                    isVerticalShiftAvailable={true}
-                    isHorizontalShiftAvailable={true}
+                    isVerticalShiftAvailable={isVerticalShiftAvailable}
+                    isHorizontalShiftAvailable={isHorizontalShiftAvailable}
+                    isOpen={isControlPanelOpened}
+                    closePanel={() => setIsControlPanelOpened(false)}
+                    roomIndex={roomIndex}
                 />
                 <PlayersSelection
                     closeSelection={() => setIsPlayersSelectionOpened(false)}

@@ -4,9 +4,14 @@ import { ArrowButtonProps } from './ArrowButton.props';
 import { Language } from '@/constants/language.constants';
 import cn from 'classnames';
 
-export const ArrowButton = ({ language, direction }: ArrowButtonProps): JSX.Element => {
+export const ArrowButton = ({
+    language,
+    direction,
+    handleClick,
+}: ArrowButtonProps): JSX.Element => {
     return (
         <button
+            onClick={handleClick}
             className={cn(styles.arrowButton, {
                 [styles.arrowButtonVertical]: direction == 'vertical',
                 [styles.arrowButtonHorizontal]: direction == 'horizontal',

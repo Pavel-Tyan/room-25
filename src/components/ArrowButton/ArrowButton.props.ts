@@ -8,4 +8,5 @@ export interface ArrowButtonProps
     > {
     language: Language;
     direction: 'vertical' | 'horizontal';
+    handleClick: () => void;
 }

@@ -3,19 +3,120 @@ import { ControlPanelProps } from './ControlPanel.props';
 import styles from './ControlPanel.module.css';
 import { Language } from '@/constants/language.constants';
 
-export const ControlPanel = ({ language }: ControlPanelProps): JSX.Element => {
+export const ControlPanel = ({
+    language,
+    isVerticalShiftAvailable,
+    isHorizontalShiftAvailable,
+    closePanel,
+    isOpen,
+    roomsInfo,
+    setRoomsInfo,
+    roomIndex,
+    hasPlayerInRoom,
+    setHasPlayerInRoom,
+}: ControlPanelProps): JSX.Element => {
+    const ROW_LENGTH: number = 5;
+
+    const getColumnIndex = (roomIndex: number): number => {
+        return roomIndex % ROW_LENGTH;
+    };
+
+    const getRowIndex = (roomIndex: number): number => {
+        return Math.floor(roomIndex / ROW_LENGTH);
+    };
+
+    const getHasPlayerInRoomCopy = (): boolean[][] => {
+        const copy: boolean[][] = [];
+        for (let roomInfo of hasPlayerInRoom) {
+            copy.push([...roomInfo]);
+        }
+        return copy;
+    };
+
+    const verticalShift = (): void => {
+        const columnIndex = getColumnIndex(roomIndex);
+        const updatedRoomsInfo = [];
+
+        for (let currentRoomInfo of roomsInfo) {
+            updatedRoomsInfo.push({ ...currentRoomInfo });
+        }
+
+        updatedRoomsInfo[columnIndex] = { ...roomsInfo[columnIndex + 4 * ROW_LENGTH] };
+        updatedRoomsInfo[columnIndex + ROW_LENGTH] = { ...roomsInfo[columnIndex] };
+        updatedRoomsInfo[columnIndex + 2 * ROW_LENGTH] = {
+            ...roomsInfo[columnIndex + ROW_LENGTH],
+        };
+        updatedRoomsInfo[columnIndex + 3 * ROW_LENGTH] = {
+            ...roomsInfo[columnIndex + 2 * ROW_LENGTH],
+        };
+        updatedRoomsInfo[columnIndex + 4 * ROW_LENGTH] = {
+            ...roomsInfo[columnIndex + 3 * ROW_LENGTH],
+        };
+
+        const updatedHasPlayerInRoom = getHasPlayerInRoomCopy();
+
+        setHasPlayerInRoom(updatedHasPlayerInRoom);
+        setRoomsInfo(updatedRoomsInfo);
+        //closePanel();
+    };
+
+    const horizontalShift = (): void => {
+        const rowIndex = getRowIndex(roomIndex);
+        const updatedRoomsInfo = [];
+        console.log(rowIndex);
+        for (let currentRoomInfo of roomsInfo) {
+            updatedRoomsInfo.push({ ...currentRoomInfo });
+        }
+
+        updatedRoomsInfo[rowIndex * ROW_LENGTH] = {
+            ...roomsInfo[rowIndex * ROW_LENGTH + 1],
+        };
+        updatedRoomsInfo[rowIndex * ROW_LENGTH + 1] = {
+            ...roomsInfo[rowIndex * ROW_LENGTH + 2],
+        };
+        updatedRoomsInfo[rowIndex * ROW_LENGTH + 2] = {
+            ...roomsInfo[rowIndex * ROW_LENGTH + 3],
+        };
+        updatedRoomsInfo[rowIndex * ROW_LENGTH + 3] = {
+            ...roomsInfo[rowIndex * ROW_LENGTH + 4],
+        };
+        updatedRoomsInfo[rowIndex * ROW_LENGTH + 4] = {
+            ...roomsInfo[rowIndex * ROW_LENGTH],
+        };
+        const updatedHasPlayerInRoom = getHasPlayerInRoomCopy();
+
+        setHasPlayerInRoom(updatedHasPlayerInRoom);
+        setRoomsInfo(updatedRoomsInfo);
+        //closePanel();
+    };
     return (
-        <div className={styles.controlPanelWrapper}>
-            {language === Language.Russian && (
-                <h1 className={styles.controlPanelTitle}>СДВИНУТЬ</h1>
+        <>
+            {isOpen && (
+                <div className={styles.controlPanelWrapper}>
+                    {language === Language.Russian && (
+                        <h1 className={styles.controlPanelTitle}>СДВИНУТЬ</h1>
+                    )}
+                    {language === Language.English && (
+                        <h1 className={styles.controlPanelTitle}>SHIFT</h1>
+                    )}
+                    <div className={styles.controlPanelsButtons}>
+                        {isHorizontalShiftAvailable && (
+                            <ArrowButton
+                                direction='horizontal'
+                                language={language}
+                                handleClick={horizontalShift}
+                            />
+                        )}
+                        {isVerticalShiftAvailable && (
+                            <ArrowButton
+                                direction='vertical'
+                                language={language}
+                                handleClick={verticalShift}
+                            />
+                        )}
+                    </div>
+                </div>
             )}
-            {language === Language.English && (
-                <h1 className={styles.controlPanelTitle}>SHIFT</h1>
-            )}
-            <div className={styles.controlPanelsButtons}>
-                <ArrowButton direction='horizontal' language={language} />
-                <ArrowButton direction='vertical' language={language} />
-            </div>
-        </div>
+        </>
     );
 };

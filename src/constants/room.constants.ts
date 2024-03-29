@@ -15,3 +15,10 @@ export enum Room {
     TwinRoom,
     Room25,
 }
+
+// Этот тип нужен для того, чтобы при использовании map()
+// у каждого элемента был уникальный ключ
+export type RoomInfo = {
+    room: Room;
+    key: number;
+};
