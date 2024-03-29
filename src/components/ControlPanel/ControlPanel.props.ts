@@ -12,4 +12,6 @@ export interface ControlPanelProps {
     roomIndex: number;
     hasPlayerInRoom: boolean[][];
     setHasPlayerInRoom: (hasPlayerInRoom: boolean[][]) => void;
+    isRoomOpened: boolean[];
+    setIsRoomOpened: (isRoomOpened: boolean[]) => void;
 }

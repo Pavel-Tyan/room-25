@@ -559,6 +559,10 @@ export const Game = (): JSX.Element => {
                     order={order}
                 />
                 <ControlPanel
+                    isRoomOpened={isRoomOpened}
+                    setIsRoomOpened={(isRoomOpened: boolean[]) =>
+                        setIsRoomOpened(isRoomOpened)
+                    }
                     hasPlayerInRoom={hasPlayerInRoom}
                     setHasPlayerInRoom={(hasPlayerInRoom: boolean[][]) =>
                         setHasPlayerInRoom(hasPlayerInRoom)

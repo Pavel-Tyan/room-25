@@ -14,6 +14,8 @@ export const ControlPanel = ({
     roomIndex,
     hasPlayerInRoom,
     setHasPlayerInRoom,
+    setIsRoomOpened,
+    isRoomOpened,
 }: ControlPanelProps): JSX.Element => {
     const ROW_LENGTH: number = 5;
 
@@ -54,10 +56,36 @@ export const ControlPanel = ({
         };
 
         const updatedHasPlayerInRoom = getHasPlayerInRoomCopy();
+        updatedHasPlayerInRoom[columnIndex] = [
+            ...hasPlayerInRoom[columnIndex + 4 * ROW_LENGTH],
+        ];
+        updatedHasPlayerInRoom[columnIndex + ROW_LENGTH] = [
+            ...hasPlayerInRoom[columnIndex],
+        ];
+        updatedHasPlayerInRoom[columnIndex + 2 * ROW_LENGTH] = [
+            ...hasPlayerInRoom[columnIndex + ROW_LENGTH],
+        ];
+        updatedHasPlayerInRoom[columnIndex + 3 * ROW_LENGTH] = [
+            ...hasPlayerInRoom[columnIndex + 2 * ROW_LENGTH],
+        ];
+        updatedHasPlayerInRoom[columnIndex + 4 * ROW_LENGTH] = [
+            ...hasPlayerInRoom[columnIndex + 3 * ROW_LENGTH],
+        ];
 
+        const updatedIsRoomOpened: boolean[] = [...isRoomOpened];
+        updatedIsRoomOpened[columnIndex] = isRoomOpened[columnIndex + 4 * ROW_LENGTH];
+        updatedIsRoomOpened[columnIndex + ROW_LENGTH] = isRoomOpened[columnIndex];
+        updatedIsRoomOpened[columnIndex + 2 * ROW_LENGTH] =
+            isRoomOpened[columnIndex + ROW_LENGTH];
+        updatedIsRoomOpened[columnIndex + 3 * ROW_LENGTH] =
+            isRoomOpened[columnIndex + 2 * ROW_LENGTH];
+        updatedIsRoomOpened[columnIndex + 4 * ROW_LENGTH] =
+            isRoomOpened[columnIndex + 3 * ROW_LENGTH];
+
+        setIsRoomOpened(updatedIsRoomOpened);
         setHasPlayerInRoom(updatedHasPlayerInRoom);
         setRoomsInfo(updatedRoomsInfo);
-        //closePanel();
+        closePanel();
     };
 
     const horizontalShift = (): void => {
@@ -85,9 +113,38 @@ export const ControlPanel = ({
         };
         const updatedHasPlayerInRoom = getHasPlayerInRoomCopy();
 
+        updatedHasPlayerInRoom[rowIndex * ROW_LENGTH] = [
+            ...hasPlayerInRoom[rowIndex * ROW_LENGTH + 1],
+        ];
+        updatedHasPlayerInRoom[rowIndex * ROW_LENGTH + 1] = [
+            ...hasPlayerInRoom[rowIndex * ROW_LENGTH + 2],
+        ];
+        updatedHasPlayerInRoom[rowIndex * ROW_LENGTH + 2] = [
+            ...hasPlayerInRoom[rowIndex * ROW_LENGTH + 3],
+        ];
+        updatedHasPlayerInRoom[rowIndex * ROW_LENGTH + 3] = [
+            ...hasPlayerInRoom[rowIndex * ROW_LENGTH + 4],
+        ];
+        updatedHasPlayerInRoom[rowIndex * ROW_LENGTH + 4] = [
+            ...hasPlayerInRoom[rowIndex * ROW_LENGTH],
+        ];
+
+        const updatedIsRoomOpened: boolean[] = [...isRoomOpened];
+        updatedIsRoomOpened[rowIndex * ROW_LENGTH] =
+            isRoomOpened[rowIndex * ROW_LENGTH + 1];
+        updatedIsRoomOpened[rowIndex * ROW_LENGTH + 1] =
+            isRoomOpened[rowIndex * ROW_LENGTH + 2];
+        updatedIsRoomOpened[rowIndex * ROW_LENGTH + 2] =
+            isRoomOpened[rowIndex * ROW_LENGTH + 3];
+        updatedIsRoomOpened[rowIndex * ROW_LENGTH + 3] =
+            isRoomOpened[rowIndex * ROW_LENGTH + 4];
+        updatedIsRoomOpened[rowIndex * ROW_LENGTH + 4] =
+            isRoomOpened[rowIndex * ROW_LENGTH];
+
+        setIsRoomOpened(updatedIsRoomOpened);
         setHasPlayerInRoom(updatedHasPlayerInRoom);
         setRoomsInfo(updatedRoomsInfo);
-        //closePanel();
+        closePanel();
     };
     return (
         <>
