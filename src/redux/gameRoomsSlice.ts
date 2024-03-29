@@ -124,7 +124,7 @@ const gameRoomsSlice = createSlice({
             sessionStorage.setItem('cards', RoomsToString(state.gameRooms));
         },
         setRoomsCustomMode(state, action: PayloadAction<Room[]>) {
-            state.gameRooms = action.payload; // Набор комнат в аргументе
+            state.gameRooms = getRandomOrderedRooms(action.payload); // Набор комнат в аргументе
             sessionStorage.setItem('cards', RoomsToString(state.gameRooms));
         },
     },

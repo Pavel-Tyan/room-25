@@ -1,0 +1,46 @@
+.selectRoomsWrapper {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+}
+
+.selectRoomsContent {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 20px 20px;
+}
+
+.selectRoomsCard {
+    display: flex;
+    flex-direction: column;
+    width: 115px;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+}
+
+.countButtonsWrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 7px;
+}
+
+.countButton {
+    border-radius: 7px;
+    width: 30px;
+    height: 30px;
+    font-size: 20px;
+    border: 2px solid var(--secondary);
+    background: var(--primary);
+    color: var(--secondary);
+    transition: all 0.3s;
+}
+
+.countButton:hover {
+    background: var(--secondary);
+    color: var(--primary);
+    transition: all 0.3s;
+}

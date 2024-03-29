@@ -68,7 +68,7 @@ export const GameDifficulty = ({
                 <Button
                     size='large'
                     handleClick={() => {
-                        router.push('/game');
+                        router.push('/custom');
                     }}
                 >
                     {language === Language.Russian && 'КАСТОМНЫЙ РЕЖИМ'}
