@@ -8,7 +8,6 @@ import { SelectActions } from '../SelectActions/SelectActions';
 import { PlayersTable } from '../PlayersTable/PlayersTable';
 import { GameAction, RoomClickHandler } from '@/constants/action.constants';
 import { ChooseRound } from '../ChooseRound/ChooseRound';
-import { ArrowButton } from '../ArrowButton/ArrowButton';
 import { PlayersSelection } from '../PlayersSelection/PlayersSelection';
 import { ControlPanel } from '../ControlPanel/ControlPanel';
 
@@ -117,7 +116,7 @@ export const Game = (): JSX.Element => {
     const [isRoomAvailable, setIsRoomAvailable] = useState<boolean[]>(
         Array(25).fill(false)
     );
-
+    const [isRoomEffectApplyStage, setIsRoomEffectApplyStage] = useState<boolean>(false);
     const findPlayerRoomIndex = (playerNumber: number): number => {
         let roomIndex: number = 0;
 
@@ -256,6 +255,11 @@ export const Game = (): JSX.Element => {
         const roomIndex = findPlayerRoomIndex(playerNumber);
         const neighbourRooms = findNeighbourRooms(roomIndex);
 
+        // Если персонаж в темной комнате, то он не может использовать действие заглянуть
+        if (roomsInfo[roomIndex].room === Room.DarkRoom) {
+            return;
+        }
+
         const updatedClickHandlers = [...clickHandlers];
 
         const isRoomAvailable: boolean[] = Array(25).fill(false);
@@ -277,11 +281,57 @@ export const Game = (): JSX.Element => {
         setClickHandlers(updatedClickHandlers);
     };
 
+    const [openedRoomIndex, setOpenedRoomIndex] = useState<number>(0);
+
+    const illusionRoomHandlerClick = (
+        roomIndex: number,
+        playerNumber: number,
+        updatedIsRoomOpened: boolean[]
+    ): void => {
+        //Открываем комнату
+        updatedIsRoomOpened[roomIndex] = true;
+        const updatedRoomsInfo: RoomInfo[] = [...roomsInfo];
+        for (let i = 0; i < roomsInfo.length; i++) {
+            if (roomsInfo[i].room === Room.IllusionRoom) {
+                const updatedHasPlayerInRoom = [];
+
+                for (let roomInfo of hasPlayerInRoom) {
+                    updatedHasPlayerInRoom.push([...roomInfo]);
+                }
+
+                // Перемещение из 1 комнаты в другую
+                for (let i = 0; i < roomsInfo.length; i++) {
+                    if (roomsInfo[i].room === Room.IllusionRoom) {
+                        updatedHasPlayerInRoom[i][playerNumber - 1] = true;
+                        break;
+                    }
+                }
+
+                // Меняем комнаты местами
+                updatedRoomsInfo[i] = { ...roomsInfo[roomIndex] };
+                updatedRoomsInfo[roomIndex] = { ...roomsInfo[i] };
+
+                const updatedIsRoomAvailable = [...isRoomAvailable];
+                for (let currentRoomIndex of otherRooms) {
+                    updatedIsRoomAvailable[currentRoomIndex] = false;
+                    updatedHasPlayerInRoom[currentRoomIndex][playerNumber - 1] = false;
+                }
+
+                setIsRoomAvailable(updatedIsRoomAvailable);
+                setHasPlayerInRoom(updatedHasPlayerInRoom);
+                setRoomsInfo(updatedRoomsInfo);
+                setIsRoomOpened(updatedIsRoomOpened);
+                break;
+            }
+        }
+        // Нужно применить эффект новой комнаты
+    };
+
     const enterActionHandleClick: RoomClickHandler = (
         roomIndex: number,
         playerNumber: number,
         otherRooms: number[]
-    ) => {
+    ): void => {
         // Удаляем обработчики на комнатах
         setClickHandlers(Array(25).fill(() => {}));
 
@@ -299,13 +349,123 @@ export const Game = (): JSX.Element => {
             updatedIsRoomAvailable[currentRoomIndex] = false;
             updatedHasPlayerInRoom[currentRoomIndex][playerNumber - 1] = false;
         }
-        // Открытие комнаты, в которую вошел игрок
+
         const updatedIsRoomOpened = [...isRoomOpened];
         updatedIsRoomOpened[roomIndex] = true;
-        setIsRoomOpened(updatedIsRoomOpened);
-        setHasPlayerInRoom(updatedHasPlayerInRoom);
-        setIsRoomAvailable(updatedIsRoomAvailable);
+
+        switch (roomsInfo[roomIndex].room) {
+            case Room.AcidBathRoom: {
+                break;
+            }
+            case Room.ControlRoom: {
+                break;
+            }
+            case Room.DarkRoom: {
+                break;
+            }
+            case Room.DeathRoom: {
+                // Игрок умирает, если войдет в комнату смерти
+                updatedHasPlayerInRoom[roomIndex][playerNumber - 1] = false;
+                const updatedOrder: number[] = [];
+
+                for (let i = 0; i < order.length; i++) {
+                    // Не добавляем в очередь игрока, который зашел в комнату смерти
+                    if (playerNumber !== order[i]) {
+                        updatedOrder.push(order[i]);
+                    }
+                }
+
+                setOrder(updatedOrder);
+                setIsRoomOpened(updatedIsRoomOpened);
+                setHasPlayerInRoom(updatedHasPlayerInRoom);
+                setIsRoomAvailable(updatedIsRoomAvailable);
+                setIsRoomEffectApplyStage(true);
+                return;
+            }
+            case Room.FloodedRoom: {
+                return;
+            }
+            case Room.FreezerRoom: {
+                return;
+            }
+            case Room.IllusionRoom: {
+                // Если все комнаты открыты, то ничего не происходит
+                if (isRoomOpened.includes(false)) {
+                    const updatedClickHandlers = [...clickHandlers];
+
+                    for (let i = 0; i < updatedIsRoomOpened.length; i++) {
+                        if (!updatedIsRoomOpened[i]) {
+                            updatedClickHandlers[i] = () =>
+                                illusionRoomHandlerClick(
+                                    i,
+                                    playerNumber,
+                                    updatedIsRoomOpened
+                                );
+                            updatedIsRoomAvailable[i] = true;
+                        }
+                    }
+                    setClickHandlers(updatedClickHandlers);
+                    setIsRoomAvailable(updatedIsRoomAvailable);
+                }
+                return;
+            }
+            case Room.JailRoom: {
+                return;
+            }
+            case Room.ObservationRoom: {
+                return;
+            }
+            case Room.TrapRoom: {
+                return;
+            }
+            case Room.TwinRoom: {
+                // Ищем индексы другой комнаты-близняшки
+                for (let i = 0; i < roomsInfo.length; i++) {
+                    if (
+                        i !== roomIndex &&
+                        roomsInfo[i].room === Room.TwinRoom &&
+                        isRoomOpened[i]
+                    ) {
+                        const secondRoomIndex: number = i;
+                        updatedHasPlayerInRoom[roomIndex][playerNumber - 1] = false;
+                        updatedHasPlayerInRoom[secondRoomIndex][playerNumber - 1] = true;
+                        break;
+                    }
+                }
+                setIsRoomOpened(updatedIsRoomOpened);
+                setHasPlayerInRoom(updatedHasPlayerInRoom);
+                setIsRoomAvailable(updatedIsRoomAvailable);
+                setIsRoomEffectApplyStage(true);
+                return;
+            }
+            case Room.WhirlpoolRoom: {
+                updatedHasPlayerInRoom[roomIndex][playerNumber - 1] = false;
+                // Перемещаем игрока в центральную комнату
+                updatedHasPlayerInRoom[12][playerNumber - 1] = true;
+                setIsRoomOpened(updatedIsRoomOpened);
+                setHasPlayerInRoom(updatedHasPlayerInRoom);
+                setIsRoomAvailable(updatedIsRoomAvailable);
+                setIsRoomEffectApplyStage(true);
+                return;
+            }
+            default: {
+                break;
+            }
+        }
+        // Открытие комнаты, в которую вошел игрок
+        // const updatedIsRoomOpened = [...isRoomOpened];
+        // updatedIsRoomOpened[roomIndex] = true;
+        // setIsRoomOpened(updatedIsRoomOpened);
+        // setHasPlayerInRoom(updatedHasPlayerInRoom);
+        // setIsRoomAvailable(updatedIsRoomAvailable);
+        // setIsRoomEffectApplyStage(true);
     };
+
+    useEffect(() => {
+        if (isRoomEffectApplyStage) {
+            setIsRoomEffectApplyStage(false);
+        }
+    }, [isRoomEffectApplyStage]);
 
     const showEnterAvailableRooms = (playerNumber: number): void => {
         const currentRoomIndex = findPlayerRoomIndex(playerNumber);
@@ -405,18 +565,12 @@ export const Game = (): JSX.Element => {
         setClickHandlers(updatedClickHandlers);
     };
 
-    const [isVerticalShiftAvailable, setIsVerticalShiftAvailable] =
-        useState<boolean>(false);
-    const [isHorizontalShiftAvailable, setIsHorizontalShiftAvailable] =
-        useState<boolean>(false);
     const [isControlPanelOpened, setIsControlPanelOpened] = useState<boolean>(false);
     const showControlAvailableRooms = (playerNumber: number): void => {
         // Здесь должна быть проверка, что ряд комнат не содержит центральную
         const currentRoomIndex = findPlayerRoomIndex(playerNumber);
         setRoomIndex(currentRoomIndex);
         setIsControlPanelOpened(true);
-        setIsVerticalShiftAvailable(true);
-        setIsHorizontalShiftAvailable(true);
     };
 
     const showPossibleMoves = (action: GameAction, playerNumber: number): void => {
@@ -493,7 +647,7 @@ export const Game = (): JSX.Element => {
     useEffect(() => {
         if (isActionStage) {
             // showPossibleMoves(GameAction.Peek, 1);
-            showPossibleMoves(GameAction.Control, 1);
+            showPossibleMoves(GameAction.Enter, 1);
             //setIsPlayerDoActionStage(false);
         }
         if (false /* условие перехода в фазу отсчета */) {
@@ -543,7 +697,8 @@ export const Game = (): JSX.Element => {
                         <GameCard
                             key={`current room ${currentRoom.key}`}
                             // Центральная комната открыта в начале игры
-                            hasOpened={isRoomOpened[i]}
+                            //hasOpened={isRoomOpened[i]}
+                            hasOpened={true}
                             hasPlayerInRoom={hasPlayerInRoom[i]}
                             room={currentRoom.room}
                             language={language}
@@ -570,8 +725,6 @@ export const Game = (): JSX.Element => {
                     setRoomsInfo={(roomsInfo: RoomInfo[]) => setRoomsInfo(roomsInfo)}
                     roomsInfo={roomsInfo}
                     language={language}
-                    isVerticalShiftAvailable={isVerticalShiftAvailable}
-                    isHorizontalShiftAvailable={isHorizontalShiftAvailable}
                     isOpen={isControlPanelOpened}
                     closePanel={() => setIsControlPanelOpened(false)}
                     roomIndex={roomIndex}

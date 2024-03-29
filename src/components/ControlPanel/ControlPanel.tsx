@@ -5,8 +5,6 @@ import { Language } from '@/constants/language.constants';
 
 export const ControlPanel = ({
     language,
-    isVerticalShiftAvailable,
-    isHorizontalShiftAvailable,
     closePanel,
     isOpen,
     roomsInfo,
@@ -17,6 +15,8 @@ export const ControlPanel = ({
     setIsRoomOpened,
     isRoomOpened,
 }: ControlPanelProps): JSX.Element => {
+    const CENTRAL_ROW_INDICES: number[] = [10, 11, 12, 13, 14];
+    const CENTRAL_COLUMN_INDICES: number[] = [2, 7, 12, 17, 22];
     const ROW_LENGTH: number = 5;
 
     const getColumnIndex = (roomIndex: number): number => {
@@ -91,7 +91,7 @@ export const ControlPanel = ({
     const horizontalShift = (): void => {
         const rowIndex = getRowIndex(roomIndex);
         const updatedRoomsInfo = [];
-        console.log(rowIndex);
+
         for (let currentRoomInfo of roomsInfo) {
             updatedRoomsInfo.push({ ...currentRoomInfo });
         }
@@ -146,9 +146,27 @@ export const ControlPanel = ({
         setRoomsInfo(updatedRoomsInfo);
         closePanel();
     };
+
+    let isHorizontalShiftAvailable = true;
+    let isVerticalShiftAvailable = true;
+
+    if (CENTRAL_ROW_INDICES.includes(roomIndex)) {
+        isHorizontalShiftAvailable = false;
+    }
+
+    if (CENTRAL_COLUMN_INDICES.includes(roomIndex)) {
+        isVerticalShiftAvailable = false;
+    }
+
+    let isPanelOpened: boolean = isOpen;
+    // Такой кейс возможен, если находимся в центральной комнате
+    if (!isHorizontalShiftAvailable && !isVerticalShiftAvailable) {
+        isPanelOpened = false;
+    }
+
     return (
         <>
-            {isOpen && (
+            {isPanelOpened && (
                 <div className={styles.controlPanelWrapper}>
                     {language === Language.Russian && (
                         <h1 className={styles.controlPanelTitle}>СДВИНУТЬ</h1>

@@ -8,6 +8,7 @@ export enum GameAction {
 
 export type RoomClickHandler =
     | (() => void)
+    | ((roomIndex: number, playerNumber: number) => void)
     | ((roomIndex: number, playerNumber: number, neighbourRooms: number[]) => void)
     | ((
           roomIndex: number,
