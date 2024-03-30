@@ -5,7 +5,7 @@ import cn from 'classnames';
 export const Button = ({
     size,
     children,
-    className,
+    className = '',
     handleClick = () => {},
 }: ButtonProps): JSX.Element => {
     return (

@@ -11,6 +11,7 @@ import { PlayersSelection } from '../PlayersSelection/PlayersSelection';
 import { ControlPanel } from '../ControlPanel/ControlPanel';
 import { Button } from '../Button/Button';
 import cn from 'classnames';
+import { GameOver } from '../GameOver/GameOver';
 
 const ROOM_COUNT: number = 25;
 const ROUNDS_COUNT: number = 10;
@@ -441,12 +442,12 @@ export const Game = (): JSX.Element => {
             updatedHasPlayerInRoom.push([...roomInfo]);
         }
 
-        const updatedIsRoomAvailable: boolean[] = [...isRoomAvailable];
+        const updatedIsRoomAvailable: boolean[] = Array(ROOM_COUNT).fill(false);
         // Перемещение из 1 комнаты в другую
         updatedHasPlayerInRoom[roomIndex][playerNumber - 1] = true;
+        setIsRoomAvailable(Array(ROOM_COUNT).fill(false));
 
         for (let currentRoomIndex of otherRooms) {
-            updatedIsRoomAvailable[currentRoomIndex] = false;
             updatedHasPlayerInRoom[currentRoomIndex][playerNumber - 1] = false;
         }
 
@@ -641,9 +642,7 @@ export const Game = (): JSX.Element => {
 
         const updatedIsRoomAvailable: boolean[] = [...isRoomAvailable];
 
-        for (let currentRoomIndex of otherRooms) {
-            updatedIsRoomAvailable[currentRoomIndex] = false;
-        }
+        setIsRoomAvailable(Array(ROOM_COUNT).fill(false));
 
         // Открытие комнаты, в которую вошел игрок
         const updatedIsRoomOpened = [...isRoomOpened];
@@ -659,6 +658,11 @@ export const Game = (): JSX.Element => {
         const currentRoomIndex = findPlayerRoomIndex(playerNumber);
         const neighbourRooms = findNeighbourRooms(currentRoomIndex);
 
+        // В морозилке нельзя использовать действие "Вытолкнуть"
+        if (roomsInfo[currentRoomIndex].room === Room.FreezerRoom) {
+            setIsSkipButtonAvailable(true);
+            return;
+        }
         const updatedClickHandlers = [...clickHandlers];
 
         const isRoomAvailable: boolean[] = Array(ROOM_COUNT).fill(false);
@@ -697,9 +701,14 @@ export const Game = (): JSX.Element => {
 
     const [isControlPanelOpened, setIsControlPanelOpened] = useState<boolean>(false);
     const showControlAvailableRooms = (playerNumber: number): void => {
+        console.log('control');
         const currentRoomIndex = findPlayerRoomIndex(playerNumber);
-        // Проверка, что комната не центральная
-        if (currentRoomIndex === 12) {
+        // Проверка, что комната центральная либо морозилка
+        if (
+            roomsInfo[currentRoomIndex].room === Room.CentralRoom ||
+            roomsInfo[currentRoomIndex].room === Room.FreezerRoom
+        ) {
+            console.log('skip');
             setIsSkipButtonAvailable(true);
             return;
         }
@@ -831,9 +840,19 @@ export const Game = (): JSX.Element => {
         setIsPlayerAlive(updatedIsPlayerAlive);
     };
 
+    const [isGameOverPopupOpened, setIsGameOverPopupOpened] = useState<boolean>(false);
+    const [isVictory, setIsVictory] = useState<boolean>(false);
+
     // Смена порядка игроков
     useEffect(() => {
         if (isCountdownStage) {
+            // Проигрыш, если закончились раунды
+            if (roundsLeft === 1) {
+                setIsGameOverPopupOpened(true);
+                setIsVictory(false);
+                return;
+            }
+            setRoundsLeft((prev) => prev - 1);
             changeOrder();
             setIsCountdownStage(false);
             // Переходим в фазу программирования
@@ -975,6 +994,11 @@ export const Game = (): JSX.Element => {
                     SKIP MOVE
                 </Button>
             )}
+            <GameOver
+                isVictory={isVictory}
+                language={language}
+                isOpen={isGameOverPopupOpened}
+            />
         </>
     );
 };
