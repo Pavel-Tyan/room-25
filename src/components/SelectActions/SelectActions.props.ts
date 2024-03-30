@@ -5,13 +5,12 @@ export interface SelectActionsProps {
     language: Language;
     playerNumber: number;
     isOpen: boolean;
-    setActionsCount: (actionsCount: number) => void;
+    setCurrentPlayerAction: (action: GameAction) => void;
     onClose: () => void;
-    firstAction: GameAction;
-    secondAction: GameAction;
+
     doNext?: () => void;
-    setFirstAction: (action: GameAction) => void;
-    setSecondAction: (action: GameAction) => void;
-    setActions: (actions: GameAction[][]) => void;
-    oldActions: GameAction[][];
+
+    setActions: (actions: GameAction[]) => void;
+    oldActions: GameAction[];
+    action: GameAction;
 }

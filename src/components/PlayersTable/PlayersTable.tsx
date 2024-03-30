@@ -13,8 +13,10 @@ export const PlayersTable = ({
     playersActions,
     order,
     activePlayer,
+    isPlayerAlive,
 }: PlayersTableProps): JSX.Element => {
     const actionsInfo = new Map<GameAction, GameActionsInfo>();
+
     actionsInfo.set(GameAction.Peek, {
         path: './actions/eye.svg',
         alt: '"Peek" action icon',
@@ -38,29 +40,26 @@ export const PlayersTable = ({
 
     return (
         <div className={styles.playersTable}>
-            {order.map((playerNumber) => (
+            {order.map((playerNumber, index) => (
                 <div
                     key={`key number: ${playerNumber}`}
-                    className={cn(styles.playerInfoWrapper, {
-                        [styles.playerActive]: activePlayer === playerNumber,
-                    })}
+                    className={cn(
+                        styles.playerInfoWrapper,
+                        {
+                            [styles.playerActive]: activePlayer === playerNumber,
+                        },
+                        {
+                            [styles.hidden]: !isPlayerAlive[index],
+                        }
+                    )}
                 >
                     <div>{playerNumber}</div>
 
                     <Image
                         // @ts-ignore
-                        src={actionsInfo.get(playersActions[playerNumber - 1][0])?.path}
+                        src={actionsInfo.get(playersActions[playerNumber - 1])?.path}
                         // @ts-ignore
-                        alt={actionsInfo.get(playersActions[playerNumber - 1][0])?.alt}
-                        width={40}
-                        height={40}
-                    />
-
-                    <Image
-                        // @ts-ignore
-                        src={actionsInfo.get(playersActions[playerNumber - 1][1])?.path}
-                        // @ts-ignore
-                        alt={actionsInfo.get(playersActions[playerNumber - 1][1])?.alt}
+                        alt={actionsInfo.get(playersActions[playerNumber - 1])?.alt}
                         width={40}
                         height={40}
                     />

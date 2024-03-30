@@ -7,9 +7,10 @@ import { useEffect, useState } from 'react';
 import { SelectActions } from '../SelectActions/SelectActions';
 import { PlayersTable } from '../PlayersTable/PlayersTable';
 import { GameAction, RoomClickHandler } from '@/constants/action.constants';
-import { ChooseRound } from '../ChooseRound/ChooseRound';
 import { PlayersSelection } from '../PlayersSelection/PlayersSelection';
 import { ControlPanel } from '../ControlPanel/ControlPanel';
+import { Button } from '../Button/Button';
+import cn from 'classnames';
 
 const ROOM_COUNT: number = 25;
 const ROUNDS_COUNT: number = 10;
@@ -40,47 +41,39 @@ export const Game = (): JSX.Element => {
     const [roomsInfo, setRoomsInfo] = useState<RoomInfo[]>(roomsInfoInitial);
     // Обработчики клика для комнат
     const [clickHandlers, setClickHandlers] = useState<(() => void)[]>(
-        Array(25).fill(() => {})
+        Array(ROOM_COUNT).fill(() => {})
     );
 
     // Фаза программирования
     const [isProgrammingStage, setIsProgrammingStage] = useState<boolean>(false);
-    // Количество действий, который выбрал первый игрок
-    const [firstPlayerActionsCount, setFirstPlayerActionsCount] = useState<number>(2);
-    // Количество действий, который выбрал второй игрок
-    const [secondPlayerActionsCount, setSecondPlayerActionsCount] = useState<number>(2);
-    // Переменные нужны для открытия модальных окон выбора действий 1ого и 2ого игрока
+
+    // Действие первого игрока
+    const [firstPlayerAction, setFirstPlayerAction] = useState<GameAction>(
+        GameAction.Peek
+    );
+
+    // Действие второго игрока
+    const [secondPlayerAction, setSecondPlayerAction] = useState<GameAction>(
+        GameAction.Peek
+    );
+
     const [isFirstSelectPopupOpened, setIsFirstSelectPopupOpened] =
         useState<boolean>(true);
     const [isSecondSelectPopupOpened, setIsSecondSelectPopupOpened] =
         useState<boolean>(false);
-    // Действия первого игрока
-    const [firstPlayerFirstAction, setFirstPlayerFirstAction] = useState<GameAction>(
-        GameAction.Peek
-    );
-    const [firstPlayerSecondAction, setFirstPlayerSecondAction] = useState<GameAction>(
-        GameAction.Peek
-    );
-    // Действия второго игрока
-    const [secondPlayerFirstAction, setSecondPlayerFirstAction] = useState<GameAction>(
-        GameAction.Peek
-    );
-    const [secondPlayerSecondAction, setSecondPlayerSecondAction] = useState<GameAction>(
-        GameAction.Peek
-    );
 
-    const [playersActions, setPlayersActions] = useState<GameAction[][]>([
-        [GameAction.Unknown, GameAction.Unknown],
-        [GameAction.Unknown, GameAction.Unknown],
-        [GameAction.Unknown, GameAction.Unknown],
-        [GameAction.Unknown, GameAction.Unknown],
-        [GameAction.Unknown, GameAction.Unknown],
-        [GameAction.Unknown, GameAction.Unknown],
+    const [playersActions, setPlayersActions] = useState<GameAction[]>([
+        GameAction.Unknown,
+        GameAction.Unknown,
+        GameAction.Unknown,
+        GameAction.Unknown,
+        GameAction.Unknown,
+        GameAction.Unknown,
     ]);
 
     useEffect(() => {
         if (isProgrammingStage) {
-            setIsFirstSelectPopupOpened(true);
+            //setIsSelectActionsPopupOpened(true);
             setIsProgrammingStage(false);
             // Переходим в фазу действия
             setIsActionStage(true);
@@ -91,10 +84,9 @@ export const Game = (): JSX.Element => {
     const [isActionStage, setIsActionStage] = useState<boolean>(false);
 
     const [activePlayer, setActivePlayer] = useState<number>(1);
-    // Выполнил ли свой ход текцщий игрок
-    const [hasDoneMove, setHasDoneMove] = useState<boolean>(false);
+
     // Расположение игроков в комнатах
-    const hasPlayerInRoomInitial: boolean[][] = Array(25).fill([
+    const hasPlayerInRoomInitial: boolean[][] = Array(ROOM_COUNT).fill([
         false,
         false,
         false,
@@ -112,7 +104,8 @@ export const Game = (): JSX.Element => {
     initialRoomState[12] = true;
     const [isRoomOpened, setIsRoomOpened] = useState<boolean[]>(initialRoomState);
 
-    // Если игрок мертв, то его нет в массиве order
+    // Если игрок мертв, то его нет в массиве isALive
+    const [isPlayerAlive, setIsPlayerAlive] = useState<boolean[]>(Array(6).fill(true));
     const [order, setOrder] = useState<number[]>([1, 2, 3, 4, 5, 6]);
     const [isRoomAvailable, setIsRoomAvailable] = useState<boolean[]>(
         Array(25).fill(false)
@@ -214,27 +207,9 @@ export const Game = (): JSX.Element => {
         }
     };
 
-    const swapActions = (playerNumber: number): void => {
-        const updatedActions: GameAction[][] = [];
-
-        for (let actions of playersActions) {
-            updatedActions.push(actions.slice(0));
-        }
-
-        const firstAction = updatedActions[playerNumber - 1][0];
-        updatedActions[playerNumber - 1][0] = updatedActions[playerNumber - 1][1];
-        updatedActions[playerNumber - 1][1] = firstAction;
-
-        setPlayersActions(updatedActions);
-    };
-
-    const peekActionHandleClick: RoomClickHandler = (
-        roomIndex: number,
-        playerNumber: number,
-        otherRooms: number[]
-    ) => {
+    const peekActionHandleClick = (roomIndex: number, otherRooms: number[]) => {
         // Удаляем обработчики на комнатах
-        setClickHandlers(Array(25).fill(() => {}));
+        setClickHandlers(Array(ROOM_COUNT).fill(() => {}));
         const updatedIsRoomAvailable: boolean[] = [...isRoomAvailable];
         for (let currentRoomIndex of otherRooms) {
             updatedIsRoomAvailable[currentRoomIndex] = false;
@@ -249,12 +224,21 @@ export const Game = (): JSX.Element => {
             const updatedIsRoomOpened = [...isRoomOpened];
             updatedIsRoomOpened[roomIndex] = false;
             setIsRoomOpened(updatedIsRoomOpened);
+
+            setCycleCurrentPlayer((prev) => prev + 1);
+            setIsActionCycleStage(true);
         }, 2000);
     };
 
     const showPeekAvailableRooms = (playerNumber: number): void => {
         const roomIndex = findPlayerRoomIndex(playerNumber);
         const neighbourRooms = findNeighbourRooms(roomIndex);
+
+        // В темной комнате нельзя использовать действие "Заглянуть"
+        if (roomsInfo[roomIndex].room === Room.DarkRoom) {
+            setIsSkipButtonAvailable(true);
+            return;
+        }
 
         // Если персонаж в темной комнате, то он не может использовать действие заглянуть
         if (roomsInfo[roomIndex].room === Room.DarkRoom) {
@@ -263,7 +247,7 @@ export const Game = (): JSX.Element => {
 
         const updatedClickHandlers = [...clickHandlers];
 
-        const isRoomAvailable: boolean[] = Array(25).fill(false);
+        const isRoomAvailable: boolean[] = Array(ROOM_COUNT).fill(false);
         for (let currentRoomIndex of neighbourRooms) {
             const otherRooms: number[] = [];
             for (let i = 0; i < neighbourRooms.length; i++) {
@@ -275,7 +259,7 @@ export const Game = (): JSX.Element => {
 
             isRoomAvailable[currentRoomIndex] = true;
             updatedClickHandlers[currentRoomIndex] = () => {
-                peekActionHandleClick(currentRoomIndex, playerNumber, otherRooms);
+                peekActionHandleClick(currentRoomIndex, otherRooms);
             };
         }
         setIsRoomAvailable(isRoomAvailable);
@@ -320,6 +304,8 @@ export const Game = (): JSX.Element => {
                 setRoomsInfo(updatedRoomsInfo);
                 setIsRoomOpened(updatedIsRoomOpened);
                 setClickHandlers(Array(25).fill(() => {}));
+                setCycleCurrentPlayer((prev) => prev + 1);
+                setIsActionCycleStage(true);
                 break;
             }
         }
@@ -367,6 +353,19 @@ export const Game = (): JSX.Element => {
                 return;
             }
             case Room.ObservationRoom: {
+                if (isRoomOpened.includes(false) && !hasObservationRoomUsed) {
+                    const updatedClickHandlers = [...clickHandlers];
+                    for (let i = 0; i < updatedIsRoomOpened.length; i++) {
+                        if (!updatedIsRoomOpened[i]) {
+                            updatedClickHandlers[i] = () =>
+                                observationRoomHandlerClick(i, updatedIsRoomOpened);
+                            updatedIsRoomAvailable[i] = true;
+                        }
+                    }
+                    setHasPlayerInRoom(updatedHasPlayerInRoom);
+                    setClickHandlers(updatedClickHandlers);
+                    setIsRoomAvailable(updatedIsRoomAvailable);
+                }
                 return;
             }
             case Room.TrapRoom: {
@@ -381,7 +380,6 @@ export const Game = (): JSX.Element => {
                         updatedRoomsInfo[i].room === Room.TwinRoom &&
                         isRoomOpened[i]
                     ) {
-                        console.log(i);
                         const secondRoomIndex: number = i;
                         updatedHasPlayerInRoom[illusionRoomIndex][playerNumber - 1] =
                             false;
@@ -410,13 +408,32 @@ export const Game = (): JSX.Element => {
         }
     };
 
+    const [hasObservationRoomUsed, setHasObservationRoomUsed] = useState<boolean>(false);
+
+    const observationRoomHandlerClick = (
+        roomIndex: number,
+        updatedIsRoomOpened: boolean[]
+    ) => {
+        setClickHandlers(Array(ROOM_COUNT).fill(() => {}));
+        const updatedIsRoomAvailable: boolean[] = [...isRoomAvailable];
+        for (let currentRoomIndex of otherRooms) {
+            updatedIsRoomAvailable[currentRoomIndex] = false;
+        }
+        setIsRoomAvailable(updatedIsRoomAvailable);
+
+        updatedIsRoomOpened[roomIndex] = true;
+        setIsRoomOpened(updatedIsRoomOpened);
+        setHasObservationRoomUsed(true);
+        setCycleCurrentPlayer((prev) => prev + 1);
+        setIsActionCycleStage(true);
+    };
     const enterActionHandleClick: RoomClickHandler = (
         roomIndex: number,
         playerNumber: number,
         otherRooms: number[]
     ): void => {
         // Удаляем обработчики на комнатах
-        setClickHandlers(Array(25).fill(() => {}));
+        setClickHandlers(Array(ROOM_COUNT).fill(() => {}));
 
         const updatedHasPlayerInRoom: boolean[][] = [];
 
@@ -435,51 +452,57 @@ export const Game = (): JSX.Element => {
 
         const updatedIsRoomOpened = [...isRoomOpened];
         updatedIsRoomOpened[roomIndex] = true;
+        // Открываем комнату
+        setIsRoomOpened(updatedIsRoomOpened);
 
         switch (roomsInfo[roomIndex].room) {
             case Room.AcidBathRoom: {
                 setHasPlayerInRoom(updatedHasPlayerInRoom);
                 setIsRoomAvailable(updatedIsRoomAvailable);
-                return;
+                break;
             }
             case Room.ControlRoom: {
                 setHasPlayerInRoom(updatedHasPlayerInRoom);
                 setRoomIndex(roomIndex);
                 setIsControlPanelOpened(true);
-                setIsRoomAvailable(Array(25).fill(false));
-                return;
+                setIsRoomAvailable(Array(ROOM_COUNT).fill(false));
+                break;
             }
             case Room.DarkRoom: {
                 setHasPlayerInRoom(updatedHasPlayerInRoom);
                 setIsRoomAvailable(updatedIsRoomAvailable);
-                return;
+                break;
             }
             case Room.DeathRoom: {
                 // Игрок умирает, если войдет в комнату смерти
                 updatedHasPlayerInRoom[roomIndex][playerNumber - 1] = false;
-                const updatedOrder: number[] = [];
+                // const updatedOrder: number[] = [];
 
-                for (let i = 0; i < order.length; i++) {
-                    // Не добавляем в очередь игрока, который зашел в комнату смерти
-                    if (playerNumber !== order[i]) {
-                        updatedOrder.push(order[i]);
-                    }
-                }
-
-                setOrder(updatedOrder);
+                // for (let i = 0; i < order.length; i++) {
+                //     // Не добавляем в очередь игрока, который зашел в комнату смерти
+                //     if (playerNumber !== order[i]) {
+                //         updatedOrder.push(order[i]);
+                //     }
+                // }
+                //setOrder(updatedOrder);
+                //
+                const updatedIsPlayerAlive = [...isPlayerAlive];
+                updatedIsPlayerAlive[playerNumber - 1] = false;
+                setIsPlayerAlive(updatedIsPlayerAlive);
+                //
                 setIsRoomOpened(updatedIsRoomOpened);
                 setHasPlayerInRoom(updatedHasPlayerInRoom);
                 setIsRoomAvailable(updatedIsRoomAvailable);
-                return;
+                break;
             }
             case Room.FloodedRoom: {
                 setHasPlayerInRoom(updatedHasPlayerInRoom);
                 setIsRoomAvailable(updatedIsRoomAvailable);
-                return;
+                break;
             }
             case Room.FreezerRoom: {
                 setHasPlayerInRoom(updatedHasPlayerInRoom);
-                return;
+                break;
             }
             case Room.IllusionRoom: {
                 // Если все комнаты открыты, то ничего не происходит
@@ -506,22 +529,37 @@ export const Game = (): JSX.Element => {
             case Room.JailRoom: {
                 setHasPlayerInRoom(updatedHasPlayerInRoom);
                 setIsRoomAvailable(updatedIsRoomAvailable);
-                return;
+                break;
             }
             case Room.ObservationRoom: {
+                if (isRoomOpened.includes(false) && !hasObservationRoomUsed) {
+                    const updatedClickHandlers = [...clickHandlers];
+                    for (let i = 0; i < updatedIsRoomOpened.length; i++) {
+                        if (!updatedIsRoomOpened[i]) {
+                            updatedClickHandlers[i] = () =>
+                                observationRoomHandlerClick(i, updatedIsRoomOpened);
+                            updatedIsRoomAvailable[i] = true;
+                        }
+                    }
+                    setClickHandlers(updatedClickHandlers);
+                    setIsRoomAvailable(updatedIsRoomAvailable);
+                } else {
+                    setClickHandlers(Array(ROOM_COUNT).fill(() => {}));
+                    setIsRoomAvailable(Array(ROOM_COUNT).fill(false));
+                }
                 setHasPlayerInRoom(updatedHasPlayerInRoom);
-                setIsRoomAvailable(updatedIsRoomAvailable);
                 return;
             }
             case Room.TrapRoom: {
                 setHasPlayerInRoom(updatedHasPlayerInRoom);
                 setIsRoomAvailable(updatedIsRoomAvailable);
-                return;
+                break;
             }
             case Room.TwinRoom: {
                 // Ищем индексы другой комнаты-близняшки
                 for (let i = 0; i < roomsInfo.length; i++) {
                     if (
+                        // Для эффекта 2 комнаты-близняшки должны быть открыты
                         i !== roomIndex &&
                         roomsInfo[i].room === Room.TwinRoom &&
                         isRoomOpened[i]
@@ -535,7 +573,7 @@ export const Game = (): JSX.Element => {
                 setIsRoomOpened(updatedIsRoomOpened);
                 setHasPlayerInRoom(updatedHasPlayerInRoom);
                 setIsRoomAvailable(updatedIsRoomAvailable);
-                return;
+                break;
             }
             case Room.WhirlpoolRoom: {
                 updatedHasPlayerInRoom[roomIndex][playerNumber - 1] = false;
@@ -544,14 +582,19 @@ export const Game = (): JSX.Element => {
                 setIsRoomOpened(updatedIsRoomOpened);
                 setHasPlayerInRoom(updatedHasPlayerInRoom);
                 setIsRoomAvailable(updatedIsRoomAvailable);
-                return;
+                break;
             }
             default: {
                 setHasPlayerInRoom(updatedHasPlayerInRoom);
                 setIsRoomAvailable(updatedIsRoomAvailable);
-                return;
+                break;
             }
         }
+        setClickHandlers(Array(ROOM_COUNT).fill(() => {}));
+        setTimeout(() => {
+            setCycleCurrentPlayer((prev) => prev + 1);
+            setIsActionCycleStage(true);
+        }, 1000);
     };
 
     const showEnterAvailableRooms = (playerNumber: number): void => {
@@ -594,7 +637,7 @@ export const Game = (): JSX.Element => {
         otherRooms: number[]
     ) => {
         // Удаляем обработчики на комнатах
-        setClickHandlers(Array(25).fill(() => {}));
+        setClickHandlers(Array(ROOM_COUNT).fill(() => {}));
 
         const updatedIsRoomAvailable: boolean[] = [...isRoomAvailable];
 
@@ -618,7 +661,7 @@ export const Game = (): JSX.Element => {
 
         const updatedClickHandlers = [...clickHandlers];
 
-        const isRoomAvailable: boolean[] = Array(25).fill(false);
+        const isRoomAvailable: boolean[] = Array(ROOM_COUNT).fill(false);
 
         const updatedNeighbourPlayers = [];
 
@@ -654,13 +697,18 @@ export const Game = (): JSX.Element => {
 
     const [isControlPanelOpened, setIsControlPanelOpened] = useState<boolean>(false);
     const showControlAvailableRooms = (playerNumber: number): void => {
-        // Здесь должна быть проверка, что ряд комнат не содержит центральную
         const currentRoomIndex = findPlayerRoomIndex(playerNumber);
+        // Проверка, что комната не центральная
+        if (currentRoomIndex === 12) {
+            setIsSkipButtonAvailable(true);
+            return;
+        }
         setRoomIndex(currentRoomIndex);
         setIsControlPanelOpened(true);
     };
 
     const showPossibleMoves = (action: GameAction, playerNumber: number): void => {
+        setActivePlayer(playerNumber);
         if (playerNumber !== 1 && playerNumber !== 2) {
             // Если попался бот
             return;
@@ -689,91 +737,118 @@ export const Game = (): JSX.Element => {
         }
     };
 
-    const doPlayersActions = (): void => {
-        // Из центральной нельзя выталкивать !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-        for (let i = 0; i < 2; i++) {
-            for (let playerNumber of order) {
-                if (playerNumber === 1) {
-                    // Учитывай, что порядок может меняться
-                    setHasDoneMove(false);
-                    let currentAction: GameAction;
+    // Для запуска цикла действий игроков
+    const [isActionCycleStage, setIsActionCycleStage] = useState<boolean>(false);
 
-                    if (i === 1) {
-                        // 1 круг
-                        if (firstPlayerActionsCount === 1) {
-                            setIsChooseRoundPopupOpened(true);
-                        }
-                        if (actionRoundNumber === 1 || firstPlayerActionsCount === 2) {
-                            // Действие
-                            //doAction(firstPlayerFirstAction, playerNumber);
-                        } else {
-                            // Если игрок выбрал действовать во 2м раунде, то ставим действие 2м по порядку
-                            swapActions(playerNumber);
-                        }
-                    } else {
-                        // 2 круг
-                        if (
-                            (firstPlayerActionsCount === 1 && actionRoundNumber === 2) ||
-                            firstPlayerActionsCount === 2
-                        ) {
-                            // Действие
-                            //doAction(firstPlayerSecondAction, playerNumber);
-                        }
-                    }
-                    while (!hasDoneMove) {}
-                } else if (playerNumber === 2) {
-                    setHasDoneMove(false);
-
-                    while (!hasDoneMove) {}
-                } else {
-                }
-            }
-        }
-    };
-
+    // Фаза действия
     useEffect(() => {
         if (isActionStage) {
-            // showPossibleMoves(GameAction.Peek, 1);
-            showPossibleMoves(GameAction.Enter, 1);
-            //setIsPlayerDoActionStage(false);
-        }
-        if (false /* условие перехода в фазу отсчета */) {
-            // Переходим в фазу отсчета, если все игроки сделали свои ходы
-            setIsCountdownStage(true);
+            // Запустим цикл действий
+            setIsActionCycleStage(true);
         }
     }, [isActionStage]);
 
+    // Индекс
+    const [cycleCurrentPlayer, setCycleCurrentPlayer] = useState<number>(0);
+    const [isBotMoveButtonAvailable, setIsBotMoveButtonAvailable] =
+        useState<boolean>(false);
+    const [isSkipButtonAvailable, setIsSkipButtonAvailable] = useState<boolean>(false);
+
+    useEffect(() => {
+        // Проверить комнаты смерти и другие, т.к игроков могли в них вытолкнуть
+        //!!!!!!!!!!!!!!!!!!!!!
+        if (isActionCycleStage && isActionStage) {
+            // Если все игроки сделали ход, то переходим ко 2 кругу действий
+            if (cycleCurrentPlayer >= order.length) {
+                // Обнуляем индекс текущего игрока для order
+                setCycleCurrentPlayer(0);
+                setIsActionCycleStage(false);
+                setIsActionStage(false);
+                setIsCountdownStage(true);
+                return;
+            }
+
+            setIsActionCycleStage(false);
+
+            const currentPlayer = order[cycleCurrentPlayer];
+
+            if (!isPlayerAlive[currentPlayer]) {
+                setIsActionCycleStage(true);
+            }
+
+            setIsActionCycleStage(false);
+
+            if (currentPlayer === 1) {
+                // Действие
+                showPossibleMoves(firstPlayerAction, 1);
+                console.log(firstPlayerAction);
+            } else if (currentPlayer === 2) {
+                // Действие
+                showPossibleMoves(secondPlayerAction, 2);
+                console.log(secondPlayerAction);
+            } else {
+                setActivePlayer(currentPlayer);
+                setIsBotMoveButtonAvailable(true);
+            }
+        }
+    }, [isActionCycleStage]);
+
+    const doBotsAction = () => {
+        setCycleCurrentPlayer((prev) => prev + 1);
+        setIsActionCycleStage(true);
+        setIsBotMoveButtonAvailable(false);
+    };
+
+    const skipMove = () => {
+        setCycleCurrentPlayer((prev) => prev + 1);
+        setIsActionCycleStage(true);
+        setIsSkipButtonAvailable(false);
+    };
+
     // Фаза отсчета
     const [isCountdownStage, setIsCountdownStage] = useState<boolean>(false);
-    const [roundsLeft, setRoundsLeft] = useState<number>(10);
+    const [roundsLeft, setRoundsLeft] = useState<number>(ROUNDS_COUNT);
     // Для открытия модального окна для выбора раунда, в котором игрок будет действовать
     const [isChooseRoundPopupOpened, setIsChooseRoundPopupOpened] =
         useState<boolean>(false);
-    // Номер круга, в котором игрок будет действовать, если выбрал 1 действие вместо 2
-    const [actionRoundNumber, setActionRoundNumber] = useState<number>(1);
     // Сдвигаем первого игрока на последнюю позицию во время хода
-    const getChangedOrder = (oldOrder: number[]): number[] => {
-        const newOrder: number[] = [...oldOrder];
-
-        if (newOrder.length === 0) {
-            return newOrder;
+    const changeOrder = (): void => {
+        const updatedOrder: number[] = [...order];
+        const updatedIsPlayerAlive: boolean[] = [...isPlayerAlive];
+        if (updatedOrder.length === 0) {
+            return;
         }
-
-        const firstPlayerIndex = newOrder[0];
-        newOrder.shift();
-        newOrder.push(firstPlayerIndex);
-
-        return newOrder;
+        const firstPlayerIndex = updatedOrder[0];
+        updatedOrder.shift();
+        updatedOrder.push(firstPlayerIndex);
+        setOrder(updatedOrder);
+        if (updatedIsPlayerAlive.length === 0) {
+            return;
+        }
+        const firstPlayerInfo = updatedIsPlayerAlive[0];
+        updatedIsPlayerAlive.shift();
+        updatedIsPlayerAlive.push(firstPlayerInfo);
+        setIsPlayerAlive(updatedIsPlayerAlive);
     };
+
     // Смена порядка игроков
     useEffect(() => {
         if (isCountdownStage) {
-            setOrder((prev) => getChangedOrder(prev));
+            changeOrder();
             setIsCountdownStage(false);
             // Переходим в фазу программирования
             setIsProgrammingStage(true);
         }
     }, [isCountdownStage]);
+
+    // Фаза программирования
+    useEffect(() => {
+        if (isProgrammingStage) {
+            setIsFirstSelectPopupOpened(true);
+            setIsProgrammingStage(false);
+            //setIsActionStage(true);
+        }
+    }, [isProgrammingStage]);
 
     return (
         <>
@@ -799,6 +874,7 @@ export const Game = (): JSX.Element => {
                     playersActions={playersActions}
                     activePlayer={activePlayer}
                     order={order}
+                    isPlayerAlive={isPlayerAlive}
                 />
                 <ControlPanel
                     isRoomOpened={isRoomOpened}
@@ -813,7 +889,11 @@ export const Game = (): JSX.Element => {
                     roomsInfo={roomsInfo}
                     language={language}
                     isOpen={isControlPanelOpened}
-                    closePanel={() => setIsControlPanelOpened(false)}
+                    closePanel={() => {
+                        setCycleCurrentPlayer((prev) => prev + 1);
+                        setIsActionCycleStage(true);
+                        setIsControlPanelOpened(false);
+                    }}
                     roomIndex={roomIndex}
                 />
                 <PlayersSelection
@@ -828,47 +908,73 @@ export const Game = (): JSX.Element => {
                 />
             </div>
             <SelectActions /* Для первого игрока */
+                action={firstPlayerAction}
+                setCurrentPlayerAction={setFirstPlayerAction}
                 playerNumber={1}
                 onClose={() => setIsFirstSelectPopupOpened(false)}
                 isOpen={isFirstSelectPopupOpened}
                 language={language}
-                setActionsCount={setFirstPlayerActionsCount}
-                firstAction={firstPlayerFirstAction}
-                secondAction={firstPlayerSecondAction}
-                setFirstAction={(action: GameAction) => setFirstPlayerFirstAction(action)}
-                setSecondAction={(action: GameAction) =>
-                    setFirstPlayerSecondAction(action)
-                }
-                doNext={() => setIsSecondSelectPopupOpened(true)}
+                doNext={() => {
+                    setIsSecondSelectPopupOpened(true);
+                }}
                 oldActions={playersActions}
-                setActions={(actions: GameAction[][]) => setPlayersActions(actions)}
+                setActions={(actions: GameAction[]) => setPlayersActions(actions)}
             />
             <SelectActions /* Для второго игрока */
+                action={secondPlayerAction}
+                setCurrentPlayerAction={setSecondPlayerAction}
                 playerNumber={2}
                 onClose={() => setIsSecondSelectPopupOpened(false)}
                 isOpen={isSecondSelectPopupOpened}
                 language={language}
-                setActionsCount={setSecondPlayerActionsCount}
-                firstAction={secondPlayerFirstAction}
-                secondAction={secondPlayerSecondAction}
-                setFirstAction={(action: GameAction) =>
-                    setSecondPlayerFirstAction(action)
-                }
-                setSecondAction={(action: GameAction) =>
-                    setSecondPlayerSecondAction(action)
-                }
                 doNext={() => setIsActionStage(true)}
                 oldActions={playersActions}
-                setActions={(actions: GameAction[][]) => setPlayersActions(actions)}
+                setActions={(actions: GameAction[]) => setPlayersActions(actions)}
             />
-            <ChooseRound
-                language={language}
-                isOpen={isChooseRoundPopupOpened}
-                setRoundNumber={(roundNumber: number) =>
-                    setActionRoundNumber(roundNumber)
-                }
-                closePopup={() => setIsChooseRoundPopupOpened(false)}
-            />
+            {language === Language.Russian && (
+                <Button
+                    size='small'
+                    handleClick={doBotsAction}
+                    className={cn({
+                        [styles.buttonHidden]: !isBotMoveButtonAvailable,
+                    })}
+                >
+                    ХОД БОТА
+                </Button>
+            )}
+            {language === Language.English && (
+                <Button
+                    size='small'
+                    handleClick={doBotsAction}
+                    className={cn({
+                        [styles.buttonHidden]: !isBotMoveButtonAvailable,
+                    })}
+                >
+                    BOT MOVE
+                </Button>
+            )}
+            {language === Language.Russian && (
+                <Button
+                    size='small'
+                    handleClick={skipMove}
+                    className={cn({
+                        [styles.buttonHidden]: !isSkipButtonAvailable,
+                    })}
+                >
+                    ПРОПУСТИТЬ ХОД
+                </Button>
+            )}
+            {language === Language.English && (
+                <Button
+                    size='small'
+                    handleClick={skipMove}
+                    className={cn({
+                        [styles.buttonHidden]: !isSkipButtonAvailable,
+                    })}
+                >
+                    SKIP MOVE
+                </Button>
+            )}
         </>
     );
 };

@@ -14,59 +14,24 @@ export const SelectActions = ({
     playerNumber,
     isOpen,
     language,
-    setActionsCount,
-    firstAction,
-    secondAction,
-    setFirstAction,
-    setSecondAction,
-    setActions,
+    setCurrentPlayerAction,
     oldActions,
+    action,
+    setActions,
     doNext = () => {},
 }: SelectActionsProps): JSX.Element => {
-    const [isSelectCountPopupOpen, setIsSelectCountPopupOpen] = useState<boolean>(true);
-
-    const [isSelectOneActionPopupOpen, setIsSelectOneActionPopupOpen] =
-        useState<boolean>(false);
-    const [isSelectTwoActionsPopupOpen, setIsSelectTwoActionsPopupOpen] =
-        useState<boolean>(false);
-
-    const submitOneAction = (): void => {
-        setActionsCount(1);
-        setSecondAction(GameAction.Unknown);
-        setIsSelectCountPopupOpen(false);
-        setIsSelectOneActionPopupOpen(true);
-    };
-
-    const submitTwoActions = (): void => {
-        setActionsCount(2);
-        setIsSelectCountPopupOpen(false);
-        setIsSelectTwoActionsPopupOpen(true);
-    };
-
     const getUpdatedActions = (
-        oldActions: GameAction[][],
+        oldActions: GameAction[],
         playerNumber: number
-    ): GameAction[][] => {
-        const updatedActions: GameAction[][] = [];
+    ): GameAction[] => {
+        const updatedActions: GameAction[] = [...oldActions];
 
-        for (let i = 0; i < oldActions.length; i++) {
-            updatedActions.push(oldActions[i].slice(0));
-        }
-
-        updatedActions[playerNumber - 1] = [firstAction, secondAction];
+        updatedActions[playerNumber - 1] = action;
 
         return updatedActions;
     };
 
-    const submitSelectedOneAction = (): void => {
-        setIsSelectOneActionPopupOpen(false);
-        setActions(getUpdatedActions(oldActions, playerNumber));
-        onClose();
-        doNext();
-    };
-
-    const submitSelectedTwoActions = (): void => {
-        setIsSelectTwoActionsPopupOpen(false);
+    const submitSelectedAction = (): void => {
         setActions(getUpdatedActions(oldActions, playerNumber));
         onClose();
         doNext();
@@ -81,82 +46,26 @@ export const SelectActions = ({
             <Popup
                 language={language}
                 hasCloseButton={false}
-                isOpen={isOpen && isSelectCountPopupOpen}
+                isOpen={isOpen}
                 title={
                     language === Language.Russian
-                        ? `ИГРОК ${playerNumber}`
-                        : `PLAYER ${playerNumber}`
-                }
-            >
-                <div className={styles.selectCountWrapper}>
-                    <Htag tag='h3'>
-                        {language === Language.Russian && 'ВЫБЕРИТЕ КОЛИЧЕСТВО ДЕЙСТВИЙ'}
-                        {language === Language.English && 'CHOOSE NUMBER OF ACTIONS'}
-                    </Htag>
-                    <Button size='large' handleClick={submitOneAction}>
-                        1
-                    </Button>
-                    <Button size='large' handleClick={submitTwoActions}>
-                        2
-                    </Button>
-                </div>
-            </Popup>
-            <Popup
-                language={language}
-                hasCloseButton={false}
-                isOpen={isSelectOneActionPopupOpen}
-                title={
-                    language === Language.Russian
-                        ? 'ВЫБОР 1 ДЕЙСТИЯ'
-                        : 'CHOICE OF 1 ACTION'
+                        ? `ВЫБОР ДЕЙСТВИЯ (ИГРОК ${playerNumber})`
+                        : `CHOICE OF ACTION (PLAYER ${playerNumber})`
                 }
             >
                 <div className={styles.radios}>
                     <ActionRadio
                         language={language}
-                        action={firstAction}
-                        onChange={setFirstAction}
+                        action={action}
+                        onChange={setCurrentPlayerAction}
                     />
                     {language === Language.Russian && (
-                        <Button size='large' handleClick={submitSelectedOneAction}>
+                        <Button size='large' handleClick={submitSelectedAction}>
                             ПОДТВЕРДИТЬ
                         </Button>
                     )}
                     {language === Language.English && (
-                        <Button size='large' handleClick={submitSelectedOneAction}>
-                            CONFIRM
-                        </Button>
-                    )}
-                </div>
-            </Popup>
-            <Popup
-                language={language}
-                hasCloseButton={false}
-                isOpen={isSelectTwoActionsPopupOpen}
-                title={
-                    language === Language.Russian
-                        ? 'ВЫБОР 2 ДЕЙСТВИЙ'
-                        : 'CHOICE OF 2 ACTIONS'
-                }
-            >
-                <div className={styles.radios}>
-                    <ActionRadio
-                        language={language}
-                        action={firstAction}
-                        onChange={setFirstAction}
-                    />
-                    <ActionRadio
-                        language={language}
-                        action={secondAction}
-                        onChange={setSecondAction}
-                    />
-                    {language === Language.Russian && (
-                        <Button size='large' handleClick={submitSelectedTwoActions}>
-                            ПОДТВЕРДИТЬ
-                        </Button>
-                    )}
-                    {language === Language.English && (
-                        <Button size='large' handleClick={submitSelectedTwoActions}>
+                        <Button size='large' handleClick={submitSelectedAction}>
                             CONFIRM
                         </Button>
                     )}

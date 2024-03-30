@@ -160,7 +160,7 @@ export const ControlPanel = ({
 
     let isPanelOpened: boolean = isOpen;
     // Такой кейс возможен, если находимся в центральной комнате
-    if (!isHorizontalShiftAvailable && !isVerticalShiftAvailable) {
+    if (isPanelOpened && !isHorizontalShiftAvailable && !isVerticalShiftAvailable) {
         isPanelOpened = false;
     }
 

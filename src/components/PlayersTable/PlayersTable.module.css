@@ -28,3 +28,7 @@
 .playerInfoNumber {
     height: 40px;
 }
+
+.hidden {
+    display: none;
+}

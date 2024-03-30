@@ -7,5 +7,6 @@ export interface ButtonProps
     > {
     size: 'large' | 'medium' | 'small';
     children: ReactNode;
+    className: string;
     handleClick?: () => void; // Сделать обязательным параметром, когда все кнопки будут с обработчиками клика
 }
