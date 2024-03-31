@@ -131,24 +131,10 @@ export const cardsInfoRussian: CardInfo[] = [
             'Центральная комната. Это комната, в которой все заключённые начинают игру. Находясь здесь, вы можете выбрать только действия «Заглянуть» и «Передвинуться». Двигать (использовать действие «Контролировать») эту комнату запрещено.',
     },
     {
-        room: Room.AcidBathRoom,
-        alt: 'Иконка комнаты с кислотной баней',
-        path: './rooms/acid.svg',
-        description:
-            'Кислотная баня. Как только двое персонажей оказываются в этой комнате, тот из них, кто зашёл первым, умирает.',
-    },
-    {
         room: Room.ObservationRoom,
         alt: 'Иконка комнаты наблюдения',
         path: './rooms/binoculars.svg',
         description: 'Комната наблюдения. Можно посмотреть любую закрытую комнату.',
-    },
-    {
-        room: Room.FloodedRoom,
-        alt: 'Иконка затопленной комнаты',
-        path: './rooms/droplet.svg',
-        description:
-            'Затопленная комната. Как только персонаж заходит в эту комнату, она закрывается изнутри. Никто не может войти в неё до конца игры. Если после второго действия следующего раунда персонаж из неё не вышел, он умирает.',
     },
     {
         room: Room.DarkRoom,
@@ -235,26 +221,14 @@ export const cardsInfoEnglish: CardInfo[] = [
         description:
             'Central room. This is the room where all prisoners start the game. While here, you can only select the “Peek” and “Move” actions. It is prohibited to move (use the “Control” action) this room.',
     },
-    {
-        room: Room.AcidBathRoom,
-        alt: 'Acid bath room icon',
-        path: './rooms/acid.svg',
-        description:
-            'Acid bath. As soon as two characters are in this room, the one who entered first dies.',
-    },
+
     {
         room: Room.ObservationRoom,
         alt: 'Observation room icon',
         path: './rooms/binoculars.svg',
         description: 'Observation room. You can view any closed room.',
     },
-    {
-        room: Room.FloodedRoom,
-        alt: 'Flooded room icon',
-        path: './rooms/droplet.svg',
-        description:
-            'Flooded room. As soon as a character enters this room, it is locked from the inside. No one can enter it until the end of the game. If after the second action of the next round the character does not exit, he dies.',
-    },
+
     {
         room: Room.DarkRoom,
         alt: 'Dark room icon',

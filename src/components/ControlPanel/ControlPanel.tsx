@@ -53,7 +53,7 @@ export const ControlPanel = ({
             CORNER_INDICES.includes(roomIndex)
         ) {
             // Если 1 или 2 игрок в комнате 25, то это победа
-            if (hasPlayerInRoom[roomIndex][0] || hasPlayerInRoom[roomIndex][0]) {
+            if (hasPlayerInRoom[roomIndex][0] || hasPlayerInRoom[roomIndex][1]) {
                 setIsVictory(true);
             } else {
                 setIsVictory(false);
@@ -117,7 +117,7 @@ export const ControlPanel = ({
             CORNER_INDICES.includes(roomIndex)
         ) {
             // Если 1 или 2 игрок в комнате 25, то это победа
-            if (hasPlayerInRoom[roomIndex][0] || hasPlayerInRoom[roomIndex][0]) {
+            if (hasPlayerInRoom[roomIndex][0] || hasPlayerInRoom[roomIndex][1]) {
                 setIsVictory(true);
             } else {
                 setIsVictory(false);

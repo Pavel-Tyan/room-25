@@ -25,10 +25,8 @@ export const SelectRooms = (): JSX.Element => {
     const [roomCount, setRoomCount] = useState<number>(2);
     const [rooms, setRooms] = useState<Room[]>([Room.CentralRoom, Room.Room25]);
 
-    const [acidRoomCount, setAcidRoomCount] = useState<number>(0);
     const [twinRoomCount, setTwinRoomCount] = useState<number>(0);
     const [observationRoomCount, setObservationRoomCount] = useState<number>(0);
-    const [floodedRoomCount, setFloodedRoomCount] = useState<number>(0);
     const [darkRoomCount, setDarkRoomCount] = useState<number>(0);
     const [controlRoomCount, setControlRoomCount] = useState<number>(0);
     const [jailRoomCount, setJailRoomCount] = useState<number>(0);
@@ -38,30 +36,6 @@ export const SelectRooms = (): JSX.Element => {
     const [whirlpoolRoomCount, setWhirlpoolRoomCount] = useState<number>(0);
     const [trapRoomCount, setTrapRoomCount] = useState<number>(0);
     const [illusionRoomCount, setIllusionRoomCount] = useState<number>(0);
-
-    const deacreaseAcidRoomCount = () => {
-        if (acidRoomCount !== 0) {
-            setAcidRoomCount((prev) => prev - 1);
-
-            for (let i = 0; i < rooms.length; i++) {
-                if (rooms[i] === Room.AcidBathRoom) {
-                    const updatedRooms = [...rooms];
-                    updatedRooms.splice(i, 1);
-                    setRooms(updatedRooms);
-                    setRoomCount((prev) => prev - 1);
-                    break;
-                }
-            }
-        }
-    };
-
-    const increaseAcidRoomCount = () => {
-        const updatedRooms = [...rooms];
-        updatedRooms.push(Room.AcidBathRoom);
-        setRooms(updatedRooms);
-        setAcidRoomCount((prev) => prev + 1);
-        setRoomCount((prev) => prev + 1);
-    };
 
     const deacreaseTwinRoomCount = () => {
         if (twinRoomCount !== 0) {
@@ -112,30 +86,6 @@ export const SelectRooms = (): JSX.Element => {
         updatedRooms.push(Room.ObservationRoom);
         setRooms(updatedRooms);
         setObservationRoomCount((prev) => prev + 1);
-        setRoomCount((prev) => prev + 1);
-    };
-
-    const deacreaseFloodedRoomCount = () => {
-        if (floodedRoomCount !== 0) {
-            setFloodedRoomCount((prev) => prev - 1);
-
-            for (let i = 0; i < rooms.length; i++) {
-                if (rooms[i] === Room.FloodedRoom) {
-                    const updatedRooms = [...rooms];
-                    updatedRooms.splice(i, 1);
-                    setRooms(updatedRooms);
-                    setRoomCount((prev) => prev - 1);
-                    break;
-                }
-            }
-        }
-    };
-
-    const increaseFloodedRoomCount = () => {
-        const updatedRooms = [...rooms];
-        updatedRooms.push(Room.FloodedRoom);
-        setRooms(updatedRooms);
-        setFloodedRoomCount((prev) => prev + 1);
         setRoomCount((prev) => prev + 1);
     };
 
@@ -257,7 +207,6 @@ export const SelectRooms = (): JSX.Element => {
         setRooms(updatedRooms);
         setEmptyRoomCount((prev) => prev + 1);
         setRoomCount((prev) => prev + 1);
-        console.log(rooms);
     };
 
     const deacreaseFreezerRoomCount = () => {
@@ -373,31 +322,6 @@ export const SelectRooms = (): JSX.Element => {
                 <div className={styles.selectRoomsCard}>
                     <Card color={'white'}>
                         <Image
-                            src='./rooms/acid.svg'
-                            alt='Acid bath room icon'
-                            width={50}
-                            height={50}
-                        />
-                    </Card>
-                    <div className={styles.countButtonsWrapper}>
-                        <button
-                            onClick={() => deacreaseAcidRoomCount()}
-                            className={styles.countButton}
-                        >
-                            -
-                        </button>
-                        {acidRoomCount}
-                        <button
-                            onClick={() => increaseAcidRoomCount()}
-                            className={styles.countButton}
-                        >
-                            +
-                        </button>
-                    </div>
-                </div>
-                <div className={styles.selectRoomsCard}>
-                    <Card color={'white'}>
-                        <Image
                             src='./rooms/twins.svg'
                             alt='Twin room icon'
                             width={50}
@@ -439,31 +363,6 @@ export const SelectRooms = (): JSX.Element => {
                         {observationRoomCount}
                         <button
                             onClick={() => increaseObservationRoomCount()}
-                            className={styles.countButton}
-                        >
-                            +
-                        </button>
-                    </div>
-                </div>
-                <div className={styles.selectRoomsCard}>
-                    <Card color={'white'}>
-                        <Image
-                            src='./rooms/droplet.svg'
-                            alt='Flooded room icon'
-                            width={50}
-                            height={50}
-                        />
-                    </Card>
-                    <div className={styles.countButtonsWrapper}>
-                        <button
-                            onClick={() => deacreaseFloodedRoomCount()}
-                            className={styles.countButton}
-                        >
-                            -
-                        </button>
-                        {floodedRoomCount}
-                        <button
-                            onClick={() => increaseFloodedRoomCount()}
                             className={styles.countButton}
                         >
                             +

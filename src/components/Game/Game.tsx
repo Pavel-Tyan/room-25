@@ -6,12 +6,14 @@ import { GameCard } from '../GameCard/GameCard';
 import { useEffect, useState } from 'react';
 import { SelectActions } from '../SelectActions/SelectActions';
 import { PlayersTable } from '../PlayersTable/PlayersTable';
-import { GameAction, RoomClickHandler } from '@/constants/action.constants';
+import { GameAction } from '@/constants/action.constants';
 import { PlayersSelection } from '../PlayersSelection/PlayersSelection';
 import { ControlPanel } from '../ControlPanel/ControlPanel';
 import { Button } from '../Button/Button';
 import cn from 'classnames';
 import { GameOver } from '../GameOver/GameOver';
+import { Direction, getRandomDirections } from '@/constants/direction.constants';
+import { getRandomInt } from '@/helpers/helpers';
 
 const ROOM_COUNT: number = 25;
 const ROUNDS_COUNT: number = 10;
@@ -235,20 +237,21 @@ export const Game = (): JSX.Element => {
         const roomIndex = findPlayerRoomIndex(playerNumber);
         const neighbourRooms = findNeighbourRooms(roomIndex);
 
-        // В темной комнате нельзя использовать действие "Заглянуть"
-        if (roomsInfo[roomIndex].room === Room.DarkRoom) {
+        // В темной комнате и в комнате ловушке нельзя использовать действие "Заглянуть"
+        if (
+            roomsInfo[roomIndex].room === Room.DarkRoom ||
+            roomsInfo[roomIndex].room === Room.TrapRoom
+        ) {
             setIsSkipButtonAvailable(true);
-            return;
-        }
-
-        // Если персонаж в темной комнате, то он не может использовать действие заглянуть
-        if (roomsInfo[roomIndex].room === Room.DarkRoom) {
             return;
         }
 
         const updatedClickHandlers = [...clickHandlers];
 
         const isRoomAvailable: boolean[] = Array(ROOM_COUNT).fill(false);
+
+        let isPeekAvailable = false;
+
         for (let currentRoomIndex of neighbourRooms) {
             const otherRooms: number[] = [];
             for (let i = 0; i < neighbourRooms.length; i++) {
@@ -258,11 +261,21 @@ export const Game = (): JSX.Element => {
             }
             otherRooms.push(currentRoomIndex);
 
-            isRoomAvailable[currentRoomIndex] = true;
-            updatedClickHandlers[currentRoomIndex] = () => {
-                peekActionHandleClick(currentRoomIndex, otherRooms);
-            };
+            if (!isRoomOpened[currentRoomIndex]) {
+                isRoomAvailable[currentRoomIndex] = true;
+                updatedClickHandlers[currentRoomIndex] = () => {
+                    peekActionHandleClick(currentRoomIndex, otherRooms);
+                };
+                isPeekAvailable = true;
+            }
         }
+
+        // Если все комнаты открыты, то заглядывать некуда
+        if (!isPeekAvailable) {
+            setIsSkipButtonAvailable(true);
+            return;
+        }
+
         setIsRoomAvailable(isRoomAvailable);
         setClickHandlers(updatedClickHandlers);
     };
@@ -313,44 +326,39 @@ export const Game = (): JSX.Element => {
 
         // Эффект комнаты, в которую попали
         switch (updatedRoomsInfo[illusionRoomIndex].room) {
-            case Room.AcidBathRoom: {
-                return;
-            }
             case Room.ControlRoom: {
                 setRoomIndex(illusionRoomIndex);
                 setIsControlPanelOpened(true);
                 setIsRoomAvailable(Array(25).fill(false));
                 return;
             }
-            case Room.DarkRoom: {
-                return;
-            }
             case Room.DeathRoom: {
                 // Игрок умирает, если войдет в комнату смерти
-                updatedHasPlayerInRoom[illusionRoomIndex][playerNumber - 1] = false;
-                const updatedOrder: number[] = [];
-
+                const updatedIsPlayerAlive: boolean[] = [...isPlayerAlive];
                 for (let i = 0; i < order.length; i++) {
                     // Не добавляем в очередь игрока, который зашел в комнату смерти
-                    if (playerNumber !== order[i]) {
-                        updatedOrder.push(order[i]);
+                    if (
+                        playerNumber === order[i] ||
+                        hasPlayerInRoom[illusionRoomIndex][order[i] - 1]
+                    ) {
+                        updatedIsPlayerAlive[i] = false;
                     }
                 }
 
-                setOrder(updatedOrder);
+                for (
+                    let i = 0;
+                    i < updatedHasPlayerInRoom[illusionRoomIndex].length;
+                    i++
+                ) {
+                    if (updatedHasPlayerInRoom[illusionRoomIndex][i]) {
+                        updatedHasPlayerInRoom[illusionRoomIndex][i] = false;
+                    }
+                }
+                setIsPlayerAlive(updatedIsPlayerAlive);
                 setIsRoomOpened(updatedIsRoomOpened);
                 setHasPlayerInRoom(updatedHasPlayerInRoom);
                 setIsRoomAvailable(updatedIsRoomAvailable);
 
-                return;
-            }
-            case Room.FloodedRoom: {
-                return;
-            }
-            case Room.FreezerRoom: {
-                return;
-            }
-            case Room.JailRoom: {
                 return;
             }
             case Room.ObservationRoom: {
@@ -369,9 +377,6 @@ export const Game = (): JSX.Element => {
                 }
                 return;
             }
-            case Room.TrapRoom: {
-                return;
-            }
             case Room.TwinRoom: {
                 // Ищем индексы другой комнаты-близняшки
 
@@ -385,6 +390,19 @@ export const Game = (): JSX.Element => {
                         updatedHasPlayerInRoom[illusionRoomIndex][playerNumber - 1] =
                             false;
                         updatedHasPlayerInRoom[secondRoomIndex][playerNumber - 1] = true;
+
+                        // Перенесем в другую комнату остальных игроков
+                        for (
+                            let i = 0;
+                            i < updatedHasPlayerInRoom[illusionRoomIndex].length;
+                            i++
+                        ) {
+                            if (updatedHasPlayerInRoom[illusionRoomIndex][i]) {
+                                updatedHasPlayerInRoom[illusionRoomIndex][i] = false;
+                                updatedHasPlayerInRoom[secondRoomIndex][i] = true;
+                            }
+                        }
+
                         break;
                     }
                 }
@@ -395,9 +413,18 @@ export const Game = (): JSX.Element => {
                 return;
             }
             case Room.WhirlpoolRoom: {
-                updatedHasPlayerInRoom[illusionRoomIndex][playerNumber - 1] = false;
-                // Перемещаем игрока в центральную комнату
-                updatedHasPlayerInRoom[12][playerNumber - 1] = true;
+                // Перемещаем всех игроков из воронки в центральную комнату
+
+                for (
+                    let i = 0;
+                    i < updatedHasPlayerInRoom[illusionRoomIndex].length;
+                    i++
+                ) {
+                    if (updatedHasPlayerInRoom[illusionRoomIndex][i]) {
+                        updatedHasPlayerInRoom[illusionRoomIndex][i] = false;
+                        updatedHasPlayerInRoom[12][i] = true;
+                    }
+                }
                 setIsRoomOpened(updatedIsRoomOpened);
                 setHasPlayerInRoom(updatedHasPlayerInRoom);
                 setIsRoomAvailable(updatedIsRoomAvailable);
@@ -428,7 +455,7 @@ export const Game = (): JSX.Element => {
         setCycleCurrentPlayer((prev) => prev + 1);
         setIsActionCycleStage(true);
     };
-    const enterActionHandleClick: RoomClickHandler = (
+    const enterActionHandleClick = (
         roomIndex: number,
         playerNumber: number,
         otherRooms: number[]
@@ -457,11 +484,6 @@ export const Game = (): JSX.Element => {
         setIsRoomOpened(updatedIsRoomOpened);
 
         switch (roomsInfo[roomIndex].room) {
-            case Room.AcidBathRoom: {
-                setHasPlayerInRoom(updatedHasPlayerInRoom);
-                setIsRoomAvailable(updatedIsRoomAvailable);
-                break;
-            }
             case Room.ControlRoom: {
                 setHasPlayerInRoom(updatedHasPlayerInRoom);
                 setRoomIndex(roomIndex);
@@ -490,11 +512,6 @@ export const Game = (): JSX.Element => {
                 setIsPlayerAlive(updatedIsPlayerAlive);
                 //
                 setIsRoomOpened(updatedIsRoomOpened);
-                setHasPlayerInRoom(updatedHasPlayerInRoom);
-                setIsRoomAvailable(updatedIsRoomAvailable);
-                break;
-            }
-            case Room.FloodedRoom: {
                 setHasPlayerInRoom(updatedHasPlayerInRoom);
                 setIsRoomAvailable(updatedIsRoomAvailable);
                 break;
@@ -547,6 +564,7 @@ export const Game = (): JSX.Element => {
                 } else {
                     setClickHandlers(Array(ROOM_COUNT).fill(() => {}));
                     setIsRoomAvailable(Array(ROOM_COUNT).fill(false));
+                    setHasPlayerInRoom(updatedHasPlayerInRoom);
                 }
                 break;
             }
@@ -607,7 +625,6 @@ export const Game = (): JSX.Element => {
 
         // Если тюрьма, то мы может пойти только в комнаты, где есть игроки
         if (roomsInfo[currentRoomIndex].room === Room.JailRoom) {
-            console.log('jail');
             let isPushAvailable: boolean = false;
 
             for (let roomIndex of neighbourRooms) {
@@ -666,7 +683,7 @@ export const Game = (): JSX.Element => {
     const [roomIndex, setRoomIndex] = useState<number>(12);
     const [otherRooms, setOtherRooms] = useState<number[]>([]);
 
-    const pushActionHandleClick: RoomClickHandler = (
+    const pushActionHandleClick = (
         roomIndex: number,
         activePlayerNumber: number,
         otherRooms: number[]
@@ -698,7 +715,7 @@ export const Game = (): JSX.Element => {
         // В морозилке и центральной комнате нельзя использовать действие "Вытолкнуть"
         if (
             roomsInfo[currentRoomIndex].room === Room.FreezerRoom ||
-            roomsInfo[currentRoomIndex].room === Room.Room25
+            roomsInfo[currentRoomIndex].room === Room.CentralRoom
         ) {
             setIsSkipButtonAvailable(true);
             return;
@@ -757,10 +774,11 @@ export const Game = (): JSX.Element => {
     const [isControlPanelOpened, setIsControlPanelOpened] = useState<boolean>(false);
     const showControlAvailableRooms = (playerNumber: number): void => {
         const currentRoomIndex = findPlayerRoomIndex(playerNumber);
-        // Проверка, что комната центральная либо морозилка
+        // В центральной комнате, морозилке и ловушке нельзя использовать действие контроллировать
         if (
             roomsInfo[currentRoomIndex].room === Room.CentralRoom ||
-            roomsInfo[currentRoomIndex].room === Room.FreezerRoom
+            roomsInfo[currentRoomIndex].room === Room.FreezerRoom ||
+            roomsInfo[currentRoomIndex].room === Room.TrapRoom
         ) {
             setIsSkipButtonAvailable(true);
             return;
@@ -825,8 +843,6 @@ export const Game = (): JSX.Element => {
     };
 
     useEffect(() => {
-        // Проверить комнаты смерти и другие, т.к игроков могли в них вытолкнуть
-        //!!!!!!!!!!!!!!!!!!!!!
         if (isActionCycleStage && isActionStage) {
             // Если все игроки сделали ход, то переходим ко 2 кругу действий
             if (cycleCurrentPlayer >= order.length) {
@@ -895,10 +911,172 @@ export const Game = (): JSX.Element => {
         }
     }, [isActionCycleStage]);
 
-    const doBotsAction = () => {
-        setCycleCurrentPlayer((prev) => prev + 1);
-        setIsActionCycleStage(true);
+    // У каждого бота будет свое направление движения
+    const botsDirections: Direction[] = getRandomDirections();
+    const enterBotActionHandleClick = (
+        roomIndex: number,
+        playerNumber: number,
+        otherRooms: number[]
+    ): void => {
+        const updatedHasPlayerInRoom: boolean[][] = [];
+
+        for (let roomInfo of hasPlayerInRoom) {
+            updatedHasPlayerInRoom.push([...roomInfo]);
+        }
+
+        // Перемещение из 1 комнаты в другую
+        updatedHasPlayerInRoom[roomIndex][playerNumber - 1] = true;
+        setIsRoomAvailable(Array(ROOM_COUNT).fill(false));
+
+        for (let currentRoomIndex of otherRooms) {
+            updatedHasPlayerInRoom[currentRoomIndex][playerNumber - 1] = false;
+        }
+
+        const updatedIsRoomOpened = [...isRoomOpened];
+        updatedIsRoomOpened[roomIndex] = true;
+        // Открываем комнату
+        setIsRoomOpened(updatedIsRoomOpened);
+
+        switch (roomsInfo[roomIndex].room) {
+            case Room.DarkRoom: {
+                setHasPlayerInRoom(updatedHasPlayerInRoom);
+                break;
+            }
+            case Room.DeathRoom: {
+                // Игрок умирает, если войдет в комнату смерти
+                updatedHasPlayerInRoom[roomIndex][playerNumber - 1] = false;
+
+                const updatedIsPlayerAlive = [...isPlayerAlive];
+
+                // Убираем игрока из таблицы игроков
+                for (let i = 0; i < order.length; i++) {
+                    if (order[i] === playerNumber) {
+                        updatedIsPlayerAlive[i] = false;
+                        break;
+                    }
+                }
+
+                setIsPlayerAlive(updatedIsPlayerAlive);
+                setIsRoomOpened(updatedIsRoomOpened);
+                setHasPlayerInRoom(updatedHasPlayerInRoom);
+                break;
+            }
+            case Room.FreezerRoom: {
+                setHasPlayerInRoom(updatedHasPlayerInRoom);
+                break;
+            }
+            case Room.JailRoom: {
+                setHasPlayerInRoom(updatedHasPlayerInRoom);
+                break;
+            }
+            case Room.TrapRoom: {
+                setHasPlayerInRoom(updatedHasPlayerInRoom);
+                break;
+            }
+            default: {
+                setHasPlayerInRoom(updatedHasPlayerInRoom);
+                break;
+            }
+        }
+        setTimeout(() => {
+            setCycleCurrentPlayer((prev) => prev + 1);
+            setIsActionCycleStage(true);
+        }, 1000);
+    };
+    const botMoveByDirection = (botNumber: number) => {
+        const roomIndex = findPlayerRoomIndex(botNumber);
+        const neighbourRooms = findNeighbourRooms(roomIndex);
+        // Если бот в комнате 25, то ое выберет действие контролировать и завершит игру
+        if (roomsInfo[roomIndex].room === Room.Room25) {
+            if (hasPlayerInRoom[roomIndex][0] || hasPlayerInRoom[roomIndex][1]) {
+                setIsVictory(true);
+            } else {
+                setIsVictory(false);
+            }
+            setIsGameOverPopupOpened(true);
+            return;
+        }
+        // Ищем безопасные пути по направлению для ботов
+        for (let currentRoomIndex of neighbourRooms) {
+            if (roomsInfo[currentRoomIndex].room !== Room.DeathRoom) {
+                const otherRooms: number[] = [];
+                for (let i = 0; i < neighbourRooms.length; i++) {
+                    if (currentRoomIndex !== neighbourRooms[i]) {
+                        otherRooms.push(neighbourRooms[i]);
+                    }
+                }
+                otherRooms.push(roomIndex);
+
+                switch (botsDirections[botNumber - 1]) {
+                    case Direction.UpperLeftCorner: {
+                        if (currentRoomIndex < roomIndex) {
+                            enterBotActionHandleClick(
+                                currentRoomIndex,
+                                botNumber,
+                                otherRooms
+                            );
+                            setIsBotMoveButtonAvailable(false);
+                            return;
+                        }
+                        break;
+                    }
+                    case Direction.UpperRightCorner: {
+                        if (
+                            roomIndex - currentRoomIndex === 5 ||
+                            currentRoomIndex - roomIndex === 1
+                        ) {
+                            enterBotActionHandleClick(
+                                currentRoomIndex,
+                                botNumber,
+                                otherRooms
+                            );
+                            setIsBotMoveButtonAvailable(false);
+                            return;
+                        }
+                        break;
+                    }
+                    case Direction.DownLeftCorner: {
+                        if (
+                            currentRoomIndex - roomIndex === 5 ||
+                            roomIndex - currentRoomIndex === 1
+                        ) {
+                            enterBotActionHandleClick(
+                                currentRoomIndex,
+                                botNumber,
+                                otherRooms
+                            );
+                            setIsBotMoveButtonAvailable(false);
+                            return;
+                        }
+                        break;
+                    }
+                    case Direction.DownRightCorner: {
+                        if (currentRoomIndex > roomIndex) {
+                            enterBotActionHandleClick(
+                                currentRoomIndex,
+                                botNumber,
+                                otherRooms
+                            );
+                            setIsBotMoveButtonAvailable(false);
+                            return;
+                        }
+                        break;
+                    }
+                }
+            }
+        }
+        // Если боты не могут идти в нужном направлении, то выбираем случайную из комнат
+        let randomIndex = getRandomInt(0, neighbourRooms.length);
+        enterBotActionHandleClick(
+            neighbourRooms[randomIndex],
+            botNumber,
+            findNeighbourRooms(neighbourRooms[randomIndex])
+        );
         setIsBotMoveButtonAvailable(false);
+    };
+
+    const doBotsAction = (botNumber: number) => {
+        botMoveByDirection(botNumber);
     };
 
     const skipMove = () => {
@@ -941,9 +1119,6 @@ export const Game = (): JSX.Element => {
         if (isCountdownStage) {
             // Проигрыш, если закончились раунды
             if (roundsLeft === 1) {
-                //!!!!!!!!!!!!!!!!!!!
-                // Проверь, что 1 и 2 игрок не погибли
-                //!!!!!!!!!!!!!!!!!!!
                 setIsGameOverPopupOpened(true);
                 setIsVictory(false);
                 return;
@@ -973,8 +1148,8 @@ export const Game = (): JSX.Element => {
                         <GameCard
                             key={`current room ${currentRoom.key}`}
                             // Центральная комната открыта в начале игры
-                            //hasOpened={isRoomOpened[i]}
-                            hasOpened={true}
+                            hasOpened={isRoomOpened[i]}
+                            //hasOpened={true}
                             hasPlayerInRoom={hasPlayerInRoom[i]}
                             room={currentRoom.room}
                             language={language}
@@ -1050,7 +1225,7 @@ export const Game = (): JSX.Element => {
             {language === Language.Russian && (
                 <Button
                     size='small'
-                    handleClick={doBotsAction}
+                    handleClick={() => doBotsAction(activePlayer)}
                     className={cn({
                         [styles.buttonHidden]: !isBotMoveButtonAvailable,
                     })}
@@ -1061,7 +1236,7 @@ export const Game = (): JSX.Element => {
             {language === Language.English && (
                 <Button
                     size='small'
-                    handleClick={doBotsAction}
+                    handleClick={() => doBotsAction(activePlayer)}
                     className={cn({
                         [styles.buttonHidden]: !isBotMoveButtonAvailable,
                     })}

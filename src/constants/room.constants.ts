@@ -1,8 +1,6 @@
 export enum Room {
     CentralRoom,
-    AcidBathRoom,
     ObservationRoom,
-    FloodedRoom,
     DarkRoom,
     ControlRoom,
     JailRoom,
