@@ -604,6 +604,41 @@ export const Game = (): JSX.Element => {
         const updatedClickHandlers = [...clickHandlers];
 
         const isRoomAvailable: boolean[] = Array(25).fill(false);
+
+        // Если тюрьма, то мы может пойти только в комнаты, где есть игроки
+        if (roomsInfo[currentRoomIndex].room === Room.JailRoom) {
+            console.log('jail');
+            let isPushAvailable: boolean = false;
+
+            for (let roomIndex of neighbourRooms) {
+                const otherRooms: number[] = [];
+                for (let i = 0; i < neighbourRooms.length; i++) {
+                    if (roomIndex !== neighbourRooms[i]) {
+                        otherRooms.push(neighbourRooms[i]);
+                    }
+                }
+                otherRooms.push(currentRoomIndex);
+
+                // Проверяем, что в соседней комнате есть игроки
+                if (hasPlayerInRoom[roomIndex].includes(true)) {
+                    isRoomAvailable[roomIndex] = true;
+                    isPushAvailable = true;
+                    updatedClickHandlers[roomIndex] = () => {
+                        enterActionHandleClick(roomIndex, playerNumber, otherRooms);
+                    };
+                }
+            }
+
+            if (!isPushAvailable) {
+                setIsSkipButtonAvailable(true);
+                return;
+            }
+
+            setIsRoomAvailable(isRoomAvailable);
+            setClickHandlers(updatedClickHandlers);
+            return;
+        }
+
         for (let roomIndex of neighbourRooms) {
             const otherRooms: number[] = [];
             for (let i = 0; i < neighbourRooms.length; i++) {
@@ -850,11 +885,9 @@ export const Game = (): JSX.Element => {
             if (currentPlayer === 1) {
                 // Действие
                 showPossibleMoves(firstPlayerAction, 1);
-                console.log(firstPlayerAction);
             } else if (currentPlayer === 2) {
                 // Действие
                 showPossibleMoves(secondPlayerAction, 2);
-                console.log(secondPlayerAction);
             } else {
                 setActivePlayer(currentPlayer);
                 setIsBotMoveButtonAvailable(true);
