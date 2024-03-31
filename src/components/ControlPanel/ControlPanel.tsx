@@ -2,6 +2,7 @@ import { ArrowButton } from '../ArrowButton/ArrowButton';
 import { ControlPanelProps } from './ControlPanel.props';
 import styles from './ControlPanel.module.css';
 import { Language } from '@/constants/language.constants';
+import { Room } from '@/constants/room.constants';
 
 export const ControlPanel = ({
     language,
@@ -14,9 +15,12 @@ export const ControlPanel = ({
     setHasPlayerInRoom,
     setIsRoomOpened,
     isRoomOpened,
+    showGameOverPopup,
+    setIsVictory,
 }: ControlPanelProps): JSX.Element => {
     const CENTRAL_ROW_INDICES: number[] = [10, 11, 12, 13, 14];
     const CENTRAL_COLUMN_INDICES: number[] = [2, 7, 12, 17, 22];
+    const CORNER_INDICES: number[] = [0, 1, 3, 4, 5, 9, 15, 19, 20, 21, 23, 24];
     const ROW_LENGTH: number = 5;
 
     const getColumnIndex = (roomIndex: number): number => {
@@ -41,6 +45,21 @@ export const ControlPanel = ({
 
         for (let currentRoomInfo of roomsInfo) {
             updatedRoomsInfo.push({ ...currentRoomInfo });
+        }
+
+        // Если комната 25 в угловой зоне, то игра окончена
+        if (
+            roomsInfo[roomIndex].room === Room.Room25 &&
+            CORNER_INDICES.includes(roomIndex)
+        ) {
+            // Если 1 или 2 игрок в комнате 25, то это победа
+            if (hasPlayerInRoom[roomIndex][0] || hasPlayerInRoom[roomIndex][0]) {
+                setIsVictory(true);
+            } else {
+                setIsVictory(false);
+            }
+            showGameOverPopup();
+            return;
         }
 
         updatedRoomsInfo[columnIndex] = { ...roomsInfo[columnIndex + 4 * ROW_LENGTH] };
@@ -91,6 +110,21 @@ export const ControlPanel = ({
     const horizontalShift = (): void => {
         const rowIndex = getRowIndex(roomIndex);
         const updatedRoomsInfo = [];
+
+        // Если комната 25 в угловой зоне, то игра окончена
+        if (
+            roomsInfo[roomIndex].room === Room.Room25 &&
+            CORNER_INDICES.includes(roomIndex)
+        ) {
+            // Если 1 или 2 игрок в комнате 25, то это победа
+            if (hasPlayerInRoom[roomIndex][0] || hasPlayerInRoom[roomIndex][0]) {
+                setIsVictory(true);
+            } else {
+                setIsVictory(false);
+            }
+            showGameOverPopup();
+            return;
+        }
 
         for (let currentRoomInfo of roomsInfo) {
             updatedRoomsInfo.push({ ...currentRoomInfo });

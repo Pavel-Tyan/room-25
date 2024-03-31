@@ -466,8 +466,7 @@ export const Game = (): JSX.Element => {
                 setHasPlayerInRoom(updatedHasPlayerInRoom);
                 setRoomIndex(roomIndex);
                 setIsControlPanelOpened(true);
-                setIsRoomAvailable(Array(ROOM_COUNT).fill(false));
-                break;
+                return;
             }
             case Room.DarkRoom: {
                 setHasPlayerInRoom(updatedHasPlayerInRoom);
@@ -477,18 +476,17 @@ export const Game = (): JSX.Element => {
             case Room.DeathRoom: {
                 // Игрок умирает, если войдет в комнату смерти
                 updatedHasPlayerInRoom[roomIndex][playerNumber - 1] = false;
-                // const updatedOrder: number[] = [];
 
-                // for (let i = 0; i < order.length; i++) {
-                //     // Не добавляем в очередь игрока, который зашел в комнату смерти
-                //     if (playerNumber !== order[i]) {
-                //         updatedOrder.push(order[i]);
-                //     }
-                // }
-                //setOrder(updatedOrder);
-                //
                 const updatedIsPlayerAlive = [...isPlayerAlive];
-                updatedIsPlayerAlive[playerNumber - 1] = false;
+
+                // Убираем игрока из таблицы игроков
+                for (let i = 0; i < order.length; i++) {
+                    if (order[i] === playerNumber) {
+                        updatedIsPlayerAlive[i] = false;
+                        break;
+                    }
+                }
+
                 setIsPlayerAlive(updatedIsPlayerAlive);
                 //
                 setIsRoomOpened(updatedIsRoomOpened);
@@ -544,12 +542,13 @@ export const Game = (): JSX.Element => {
                     }
                     setClickHandlers(updatedClickHandlers);
                     setIsRoomAvailable(updatedIsRoomAvailable);
+                    setHasPlayerInRoom(updatedHasPlayerInRoom);
+                    return;
                 } else {
                     setClickHandlers(Array(ROOM_COUNT).fill(() => {}));
                     setIsRoomAvailable(Array(ROOM_COUNT).fill(false));
                 }
-                setHasPlayerInRoom(updatedHasPlayerInRoom);
-                return;
+                break;
             }
             case Room.TrapRoom: {
                 setHasPlayerInRoom(updatedHasPlayerInRoom);
@@ -644,7 +643,7 @@ export const Game = (): JSX.Element => {
 
         setIsRoomAvailable(Array(ROOM_COUNT).fill(false));
 
-        // Открытие комнаты, в которую вошел игрок
+        // Открытие комнаты, в которую вытолкнули игрока
         const updatedIsRoomOpened = [...isRoomOpened];
         updatedIsRoomOpened[roomIndex] = true;
         setIsPlayersSelectionOpened(true);
@@ -652,17 +651,38 @@ export const Game = (): JSX.Element => {
         setIsRoomAvailable(updatedIsRoomAvailable);
         setRoomIndex(roomIndex);
         setOtherRooms([...otherRooms]);
+
+        setCycleCurrentPlayer((prev) => prev + 1);
+        setIsActionCycleStage(true);
     };
 
     const showPushAvailableRooms = (playerNumber: number): void => {
         const currentRoomIndex = findPlayerRoomIndex(playerNumber);
         const neighbourRooms = findNeighbourRooms(currentRoomIndex);
 
-        // В морозилке нельзя использовать действие "Вытолкнуть"
-        if (roomsInfo[currentRoomIndex].room === Room.FreezerRoom) {
+        // В морозилке и центральной комнате нельзя использовать действие "Вытолкнуть"
+        if (
+            roomsInfo[currentRoomIndex].room === Room.FreezerRoom ||
+            roomsInfo[currentRoomIndex].room === Room.Room25
+        ) {
             setIsSkipButtonAvailable(true);
             return;
         }
+
+        // Если других игроков нет, то пропускаем ход
+        let isPushAvailable: boolean = false;
+        for (let i = 0; i < hasPlayerInRoom[currentRoomIndex].length; i++) {
+            if (playerNumber - 1 !== i && hasPlayerInRoom[currentRoomIndex][i]) {
+                isPushAvailable = true;
+                break;
+            }
+        }
+
+        if (!isPushAvailable) {
+            setIsSkipButtonAvailable(true);
+            return;
+        }
+
         const updatedClickHandlers = [...clickHandlers];
 
         const isRoomAvailable: boolean[] = Array(ROOM_COUNT).fill(false);
@@ -673,9 +693,9 @@ export const Game = (): JSX.Element => {
             if (i === playerNumber - 1) {
                 // Мы не можем вытолкнуть себя
                 updatedNeighbourPlayers.push(false);
+            } else {
+                updatedNeighbourPlayers.push(hasPlayerInRoom[currentRoomIndex][i]);
             }
-
-            updatedNeighbourPlayers.push(hasPlayerInRoom[currentRoomIndex][i]);
         }
 
         setNeighbourPlayers(updatedNeighbourPlayers);
@@ -701,14 +721,12 @@ export const Game = (): JSX.Element => {
 
     const [isControlPanelOpened, setIsControlPanelOpened] = useState<boolean>(false);
     const showControlAvailableRooms = (playerNumber: number): void => {
-        console.log('control');
         const currentRoomIndex = findPlayerRoomIndex(playerNumber);
         // Проверка, что комната центральная либо морозилка
         if (
             roomsInfo[currentRoomIndex].room === Room.CentralRoom ||
             roomsInfo[currentRoomIndex].room === Room.FreezerRoom
         ) {
-            console.log('skip');
             setIsSkipButtonAvailable(true);
             return;
         }
@@ -749,11 +767,14 @@ export const Game = (): JSX.Element => {
     // Для запуска цикла действий игроков
     const [isActionCycleStage, setIsActionCycleStage] = useState<boolean>(false);
 
+    // Для отображения в нужный момент кнопки старта раунда
+    const [isStartRoundButtonOpened, setIsStartRoundButtonOpened] =
+        useState<boolean>(false);
     // Фаза действия
     useEffect(() => {
         if (isActionStage) {
-            // Запустим цикл действий
-            setIsActionCycleStage(true);
+            // Отобразим кнопку для старта раунда
+            setIsStartRoundButtonOpened(true);
         }
     }, [isActionStage]);
 
@@ -762,6 +783,11 @@ export const Game = (): JSX.Element => {
     const [isBotMoveButtonAvailable, setIsBotMoveButtonAvailable] =
         useState<boolean>(false);
     const [isSkipButtonAvailable, setIsSkipButtonAvailable] = useState<boolean>(false);
+
+    const startRoundButtonHandleClick = (): void => {
+        setIsActionCycleStage(true);
+        setIsStartRoundButtonOpened(false);
+    };
 
     useEffect(() => {
         // Проверить комнаты смерти и другие, т.к игроков могли в них вытолкнуть
@@ -781,8 +807,42 @@ export const Game = (): JSX.Element => {
 
             const currentPlayer = order[cycleCurrentPlayer];
 
-            if (!isPlayerAlive[currentPlayer]) {
-                setIsActionCycleStage(true);
+            // Если персонаж игрока умер, то пропускаем ход
+            for (let i = 0; i < isPlayerAlive.length; i++) {
+                setIsRoomAvailable(Array(ROOM_COUNT).fill(false));
+                setClickHandlers(Array(ROOM_COUNT).fill(() => {}));
+                if (!isPlayerAlive[i] && order[i] === currentPlayer) {
+                    setIsSkipButtonAvailable(true);
+                    return;
+                }
+            }
+
+            let isFirstPlayerAlive: boolean = true;
+            let isSecondPlayerAlive: boolean = true;
+            let aliveCounter = 0;
+            // Если 1 и 2 игрок погибли, то это проигрыш
+            for (let i = 0; i < isPlayerAlive.length; i++) {
+                if (isPlayerAlive[i]) {
+                    aliveCounter++;
+                }
+                if (!isPlayerAlive[i] && order[i] === 1) {
+                    isFirstPlayerAlive = false;
+                } else if (!isPlayerAlive[i] && order[i] === 2) {
+                    isSecondPlayerAlive = false;
+                }
+            }
+
+            if (!isFirstPlayerAlive && !isSecondPlayerAlive) {
+                setIsVictory(false);
+                setIsGameOverPopupOpened(true);
+                return;
+            }
+
+            // Если все боты погибли, то это победа
+            if (isFirstPlayerAlive && isSecondPlayerAlive && aliveCounter === 2) {
+                setIsVictory(true);
+                setIsGameOverPopupOpened(true);
+                return;
             }
 
             setIsActionCycleStage(false);
@@ -848,6 +908,9 @@ export const Game = (): JSX.Element => {
         if (isCountdownStage) {
             // Проигрыш, если закончились раунды
             if (roundsLeft === 1) {
+                //!!!!!!!!!!!!!!!!!!!
+                // Проверь, что 1 и 2 игрок не погибли
+                //!!!!!!!!!!!!!!!!!!!
                 setIsGameOverPopupOpened(true);
                 setIsVictory(false);
                 return;
@@ -865,7 +928,6 @@ export const Game = (): JSX.Element => {
         if (isProgrammingStage) {
             setIsFirstSelectPopupOpened(true);
             setIsProgrammingStage(false);
-            //setIsActionStage(true);
         }
     }, [isProgrammingStage]);
 
@@ -914,6 +976,8 @@ export const Game = (): JSX.Element => {
                         setIsControlPanelOpened(false);
                     }}
                     roomIndex={roomIndex}
+                    showGameOverPopup={() => setIsGameOverPopupOpened(true)}
+                    setIsVictory={(isVictory: boolean) => setIsVictory(isVictory)}
                 />
                 <PlayersSelection
                     closeSelection={() => setIsPlayersSelectionOpened(false)}
@@ -992,6 +1056,28 @@ export const Game = (): JSX.Element => {
                     })}
                 >
                     SKIP MOVE
+                </Button>
+            )}
+            {language === Language.Russian && (
+                <Button
+                    size='small'
+                    handleClick={startRoundButtonHandleClick}
+                    className={cn({
+                        [styles.buttonHidden]: !isStartRoundButtonOpened,
+                    })}
+                >
+                    НАЧАТЬ РАУНД
+                </Button>
+            )}
+            {language === Language.English && (
+                <Button
+                    size='small'
+                    handleClick={startRoundButtonHandleClick}
+                    className={cn({
+                        [styles.buttonHidden]: !isStartRoundButtonOpened,
+                    })}
+                >
+                    START ROUND
                 </Button>
             )}
             <GameOver

@@ -12,4 +12,6 @@ export interface ControlPanelProps {
     setHasPlayerInRoom: (hasPlayerInRoom: boolean[][]) => void;
     isRoomOpened: boolean[];
     setIsRoomOpened: (isRoomOpened: boolean[]) => void;
+    showGameOverPopup: () => void;
+    setIsVictory: (isVictory: boolean) => void;
 }
