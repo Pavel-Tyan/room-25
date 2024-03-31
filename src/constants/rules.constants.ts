@@ -20,20 +20,21 @@ export let rulesRussian: Rules = {
     description: `Игровое поле состоит из 25 карточек комнат, расположенных 5 на 5 в виде квадрата.
 Комната может быть открытой (игроки видят ее эффект), либо закрытой (эффект комнаты
 неизвестен). Вначале игры все комнаты, кроме комнаты, которая расположена по центру
-(это центральная комната) закрыты. Всего 3 участника: 2 бота и сам игрок. Каждому
-участнику дается 2 персонажа. Все персонажи расположены в центральной комнате. Чтобы
-сбежать из тюрьмы, нужно найти комнату 25 и передвинуть ее к одной из зон выхода. Зона
-выхода – это комната, расположенная в углу вместе с ее соседними комнатами. Соседние
-комнаты текущей комнаты – это все ближайшие комнаты, кроме тех, которые расположены
-по диагонали от текущей. Комнаты расположены случайным образом, однако комната
-управления и комната 25 должны быть в зонах выхода. Победителем считается игрок, чьи
-персонажи успели спастись первыми или уничтожили всех соперников.
+(это центральная комната) закрыты. Всего 2 участника: бот и сам игрок. Игроку дается 2 
+игровых персонажа. Бот управляет 4 персонажами. Все персонажи расположены в центральной комнате. Чтобы
+сбежать из тюрьмы, нужно найти комнату 25 и использовать действие "Контролировать". Комнаты 
+расположены случайным образом, однако комната управления и комната 25 должны быть 
+в зонах выхода. Зона выхода – это комната, расположенная в углу вместе с ее 
+соседними комнатами. Соседние комнаты текущей комнаты – это все 
+ближайшие комнаты, кроме тех, которые расположены
+по диагонали от текущей. Игрок победил, если все вражеские персонажи мертвы, либо
+если 1 из его персонажей находился в комнате 25 во время действия "Контролировать"
 Игра состоит из 10 раундов. Каждый раунд содержит в себе 3 фазы. 
-Первая фаза - программирование. Каждый игрок выбирает 2 действия для 2 
-своих персонажей. Далее игроки по очереди выполняют действия. После порядок хода игроков 
+Первая фаза - программирование. Каждый игрок выбирает 1 действие для 1 персонажа. 
+Далее игроки по очереди выполняют действия. После порядок хода игроков 
 сдвигается на 1 игрока. Игрок, который ходил первым, теперь ходит последним. 
 Игрок, который ходил вторым, теперь ходит
-первым и т.д.`,
+первым и т.д. Эффекты комнат (кроме комнаты смерти и тюрьмы) не работают на персонажах бота.`,
     actionsInfo: [
         {
             path: './actions/eye.svg',
@@ -73,20 +74,21 @@ export let rulesEnglish: Rules = {
     description: `The playing field consists of 25 room cards, arranged 5 by 5 in the form of a square.
 The room can be open (players see its effect) or closed (room effect
 unknown). At the beginning of the game, all rooms except the room located in the center
-(this is the central room) are closed. There are 3 participants in total: 2 bots and the 
-player himself. To each The participant is given 2 characters. All characters are 
-located in the central room. To escape from prison, you need to find room 25 and move it to one of the exit areas. Zone
-exit is a room located in the corner along with its neighboring rooms. The neighboring rooms 
-of the current room are all the nearest rooms, except those located diagonally from 
-the current one. The rooms are located randomly, however the room control and room 25 
-should be in the exit areas. The winner is the player whose
-the characters managed to escape first or destroyed all rivals.
+(this is the central room) are closed. There are only 2 participants: the bot and the player himself. The player is given 2
+game characters. The bot controls 4 characters. All characters are located in the central room. To
+To escape from prison, you need to find room 25 and use the “Control” action. Rooms
+are located randomly, however the control room and room 25 must be
+in exit areas. The exit area is a room located in the corner along with its
+neighboring rooms. Neighboring rooms of the current room are everything
+the nearest rooms other than those located
+diagonally from the current one. The player wins if all enemy characters are dead, or
+if 1 of his characters was in room 25 during the "Control" action
 The game consists of 10 rounds. Each round contains 3 phases.
-The first phase is programming. Each player chooses 2 actions for 2
-their characters. Next, players take turns performing actions. After the player's turn order
+The first phase is programming. Each player chooses 1 action for 1 character.
+Next, players take turns performing actions. After the player's turn order
 moves by 1 player. The player who went first now goes last.
 The player who went second now goes
-first, etc.`,
+first, etc. Room effects (except for the death room and jail) do not work on bot characters.`,
     actionsInfo: [
         {
             path: './actions/eye.svg',
@@ -148,7 +150,7 @@ export const cardsInfoRussian: CardInfo[] = [
         alt: 'Иконка комнаты контроля',
         path: './rooms/gear.svg',
         description:
-            'Комната контроля. Передвиньте любой ряд комнат (кроме среднего) в любом направлении по вашему выбору (как при совершении действия «Контролировать»).',
+            'Комната контроля. Передвиньте любой ряд комнат (кроме среднего) влево или вниз по вашему выбору (как при совершении действия «Контролировать»).',
     },
     {
         room: Room.JailRoom,
@@ -175,7 +177,7 @@ export const cardsInfoRussian: CardInfo[] = [
         alt: 'Иконка комнаты с морозилкой',
         path: './rooms/snowflake.svg',
         description:
-            'Морозилка. Находясь в этой комнате, можно запрограммировать только одно действие во время фазы программирования.',
+            'Морозилка. Находясь в этой комнате, нельзя использовать действия "Контролировать" и "Толкнуть".',
     },
     {
         room: Room.WhirlpoolRoom,
@@ -188,7 +190,7 @@ export const cardsInfoRussian: CardInfo[] = [
         alt: 'Иконка комнаты с ловушкой',
         path: './rooms/trap.svg',
         description:
-            'Ловушка. Следующим действием нужно покинуть комнату, иначе вас убьют.',
+            'Ловушка. Находясь в этой комнате, нельзя использовать действия "Контролировать" и "Заглянуть".',
     },
     {
         room: Room.IllusionRoom,
@@ -202,7 +204,7 @@ export const cardsInfoRussian: CardInfo[] = [
         alt: 'Иконка комнаты-близняшки',
         path: './rooms/twins.svg',
         description:
-            '⎯ Комната-Близняшка. Если вторая комната-близняшка уже открыта, то персонаж перемещается в неё. Если нет, ничего не происходит.',
+            'Комната-Близняшка. Если вторая комната-близняшка уже открыта, то персонаж перемещается в неё. Если нет, ничего не происходит.',
     },
     {
         room: Room.Room25,
@@ -233,14 +235,14 @@ export const cardsInfoEnglish: CardInfo[] = [
         room: Room.DarkRoom,
         alt: 'Dark room icon',
         path: './rooms/eye.svg',
-        description: 'A dark room. While in this room, you cannot take the Peek action.',
+        description: 'Dark room. While in this room, you cannot take the Peek action.',
     },
     {
         room: Room.ControlRoom,
         alt: 'Control room icon',
         path: './rooms/gear.svg',
         description:
-            'Control room. Move any row of rooms (except the middle one) in any direction of your choice (as when taking the Control action).',
+            'Control room. Move any row of rooms (except the middle one) to the left or down of your choice (as when taking the Control action).',
     },
     {
         room: Room.JailRoom,
@@ -266,7 +268,7 @@ export const cardsInfoEnglish: CardInfo[] = [
         alt: 'Freezer room icon',
         path: './rooms/snowflake.svg',
         description:
-            'Freezer. While in this room, you can only program one action during the programming phase.',
+            'Freezer. You cannot use the Control and Push actions while in this room.',
     },
     {
         room: Room.WhirlpoolRoom,
@@ -279,7 +281,7 @@ export const cardsInfoEnglish: CardInfo[] = [
         alt: 'Trap room icon',
         path: './rooms/trap.svg',
         description:
-            'Trap. The next action is to leave the room, otherwise you will be killed.',
+            'Trap. You cannot use the "Control" and "Peek" actions while in this room.',
     },
     {
         room: Room.IllusionRoom,
