@@ -938,10 +938,6 @@ export const Game = (): JSX.Element => {
         setIsRoomOpened(updatedIsRoomOpened);
 
         switch (roomsInfo[roomIndex].room) {
-            case Room.DarkRoom: {
-                setHasPlayerInRoom(updatedHasPlayerInRoom);
-                break;
-            }
             case Room.DeathRoom: {
                 // Игрок умирает, если войдет в комнату смерти
                 updatedHasPlayerInRoom[roomIndex][playerNumber - 1] = false;
@@ -958,18 +954,6 @@ export const Game = (): JSX.Element => {
 
                 setIsPlayerAlive(updatedIsPlayerAlive);
                 setIsRoomOpened(updatedIsRoomOpened);
-                setHasPlayerInRoom(updatedHasPlayerInRoom);
-                break;
-            }
-            case Room.FreezerRoom: {
-                setHasPlayerInRoom(updatedHasPlayerInRoom);
-                break;
-            }
-            case Room.JailRoom: {
-                setHasPlayerInRoom(updatedHasPlayerInRoom);
-                break;
-            }
-            case Room.TrapRoom: {
                 setHasPlayerInRoom(updatedHasPlayerInRoom);
                 break;
             }

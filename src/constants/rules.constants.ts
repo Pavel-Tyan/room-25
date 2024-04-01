@@ -34,7 +34,7 @@ export let rulesRussian: Rules = {
 Далее игроки по очереди выполняют действия. После порядок хода игроков 
 сдвигается на 1 игрока. Игрок, который ходил первым, теперь ходит последним. 
 Игрок, который ходил вторым, теперь ходит
-первым и т.д. Эффекты комнат (кроме комнаты смерти и тюрьмы) не работают на персонажах бота.`,
+первым и т.д. Эффекты комнат (кроме комнаты смерти) не работают на персонажах бота.`,
     actionsInfo: [
         {
             path: './actions/eye.svg',
@@ -88,7 +88,7 @@ The first phase is programming. Each player chooses 1 action for 1 character.
 Next, players take turns performing actions. After the player's turn order
 moves by 1 player. The player who went first now goes last.
 The player who went second now goes
-first, etc. Room effects (except for the death room and jail) do not work on bot characters.`,
+first, etc. Room effects (except for the death room) do not work on bot characters.`,
     actionsInfo: [
         {
             path: './actions/eye.svg',
