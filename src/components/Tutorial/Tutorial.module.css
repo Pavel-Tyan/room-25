@@ -1,0 +1,35 @@
+.gameWrapper {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 70px;
+    position: relative;
+    margin-top: 10px;
+}
+
+.message {
+    position: absolute;
+    z-index: 1;
+    top: 0%;
+    left: -6%;
+    font-weight: bold;
+    font-size: 13px;
+    height: 120px;
+    width: 302px;
+}
+
+.rooms {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 5px 5px;
+}
+
+.skipButton {
+    position: absolute;
+    bottom: 10%;
+    left: -1%;
+}
+
+.hiddenButton {
+    display: none;
+}

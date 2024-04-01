@@ -36,7 +36,7 @@ export const GameDifficulty = ({
                 <Button
                     size='large'
                     handleClick={() => {
-                        router.push('/game');
+                        router.push('/tutorial');
                     }}
                 >
                     {language === Language.Russian && 'ОБУЧЕНИЕ'}

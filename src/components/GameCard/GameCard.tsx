@@ -49,7 +49,6 @@ export const GameCard = ({
                     // @ts-ignore
                     alt={hasOpened ? cardsInfoMap.get(room).alt : 'question mark icon'}
                 />
-                {/* Здесь можно проверить на hasOpened */}
                 {hasPlayerInRoom[0] && <Player number={1} language={language}></Player>}
                 {hasPlayerInRoom[1] && <Player number={2} language={language}></Player>}
                 {hasPlayerInRoom[2] && <Player number={3} language={language}></Player>}
