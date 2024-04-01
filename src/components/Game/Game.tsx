@@ -1149,7 +1149,6 @@ export const Game = (): JSX.Element => {
                             key={`current room ${currentRoom.key}`}
                             // Центральная комната открыта в начале игры
                             hasOpened={isRoomOpened[i]}
-                            //hasOpened={true}
                             hasPlayerInRoom={hasPlayerInRoom[i]}
                             room={currentRoom.room}
                             language={language}
